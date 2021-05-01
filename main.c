@@ -1,5 +1,7 @@
 #include <stdio.h>
 
+// Constants declarations
+
 int i;
 
 // 				#Structures start here
@@ -60,8 +62,23 @@ struct operations{
 	char observation[1000];
 };
 
+struct company{
+	int id;
+	char name[20];
+	char type[20];
+	char contact[30];
+};
 
 // 					#Structures end here
+
+// Functions definitions
+void login();
+void menu();
+void errorMessage();
+void clearScreen();
+void exit();
+void footer();
+void header();
 
 void login(){
 	system("cls");
@@ -73,8 +90,34 @@ void menu(){
 
 }
 
+// Program start running here
 int main() {
 	login();
 	getchar();
 	return 0;
+}
+
+
+void errorMessage(){
+
+}
+
+void exit(){
+
+}
+
+void clearScreen(){
+
+}
+
+void header(){
+
+}
+
+void footer(){
+
+}
+
+void sucessfull(){
+
 }
