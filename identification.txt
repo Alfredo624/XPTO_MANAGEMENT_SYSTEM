@@ -1,0 +1,11 @@
+*** IDENTIFICAÇÃO:
+
+	TURMA: EINF2_M2;
+	GRUPO: A;
+	DATA: 08/04/2021;
+
+	*** INTEGRANTES:
+		20200546 - Alfredo Alberto Dínis Martins;
+		20200618 - Avelar Manuel Machado;
+		20200456 - Énio Carlos Paulo;
+		20201649 - Enoque Miguel Rogério.
