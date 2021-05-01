@@ -1,0 +1,53 @@
+- GESTÃO DE EQUIPAMENTOS NA EMPRESA XPTO
+
+IDENTIDADES:
+1 - Componentes:
+ - identificação, 
+ - designação, 
+ - número de série, 
+ - data de aquisição, 
+ - garantia, 
+ - identificação do fornecedor, 
+ - identificação do fabricante, 
+ - tipo, 
+ - condição, 
+ - identificação do posto de trabalho
+ - observações;
+
+2 - Posto de trabalho:
+ - identificação; 
+ - nome;
+ - local;
+ - secção;
+ - descrição;
+ - identificação do funcionário.
+
+3 - Funcionário:
+ - incluindo a identificação;
+ - nome;
+ - função e a descrição.
+
+4 - Operações:
+ - incluindo o número do documento interno;
+ - número do documento externo;
+ - identificação do posto de trabalho;
+ - identificação do componente;
+ - identificação da empresa;
+ - tipo de operação;
+ - data de saída;
+ - data de chegada; 
+ - data prevista de chegada; 
+ - identificação do funcionário responsável; 
+ - data da operação;
+ - montante;
+ - observações.
+
+5 - Empresa:
+ - identificação; 
+ - nome;
+ - tipo (Fornecedor, Fabricante, Reciclagem, Agência, etc.);
+ - contacto.
+
+FUNCIONALIDADES:
+1 - Inserir, Alterar, Apagar, Listar e Pesquisar as diversas Fichas;
+2 - Gestão de Entradas e Saídas dos Componentes, por Posto de Trabalho, por Tipologia de Condição/ Tipologia de Empresa, Garantias/ Reparação/ Abatimento;
