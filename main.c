@@ -6,10 +6,14 @@ int i;
 
 // 				#Structures start here
 
-//User structure
-struct user{
+//Employee and User structure
+struct employee{
+	int id;
+	char name[20];
 	char user_name[20];
 	char password[20];
+	char function[20];
+	char note[50];
 };
 
 //Components structure
@@ -37,16 +41,9 @@ struct work_office{
 	int id_employee;
 };
 
-//Employee structure
-struct employee{
-	int id;
-	char name[20];
-	char function[20];
-	char note[50];
-};
-
 //Operation structure
 struct operations{
+	int id;
 	int id_internal_doc;
 	int id_external_doc;
 	int id_work_office;
@@ -62,6 +59,7 @@ struct operations{
 	char observation[1000];
 };
 
+// Company structure
 struct company{
 	int id;
 	char name[20];
