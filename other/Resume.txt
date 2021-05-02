@@ -12,7 +12,7 @@ IDENTIDADES:
  - tipo, 
  - condição, 
  - identificação do posto de trabalho
- - observações;
+ - observações.
 
 2 - Posto de trabalho:
  - identificação; 

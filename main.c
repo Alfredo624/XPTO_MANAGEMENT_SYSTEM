@@ -11,7 +11,6 @@ int i;
 struct employee{
 	int id;
 	char name[20];
-	char user_name[20];
 	char password[20];
 	char function[20];
 	char note[50];
@@ -81,8 +80,10 @@ void header();
 
 void login(){
 	system("cls");
-	printf("\n\n\t\t WELCOME TO XPTO MANAGMENT SYSYTEM\n");
-	printf("\t\t\t\tSecurity");
+	header();
+	//printf("\n\n\t\t WELCOME TO XPTO MANAGMENT SYSYTEM\n");
+	//printf("\t\t\t\tSecurity");
+	footer();
 }
 
 void menu(){
@@ -109,11 +110,14 @@ void clearScreen(){
 }
 
 void header(){
-
+	printf("\n");
+	printf("\t\t\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb XPTO MANAGMENT SYSYTEM \xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\n");
 }
 
 void footer(){
-
+	time_t t;
+	time(&t);
+	printf("\n\t\tDate and time: %s\n",ctime(&t));
 }
 
 void sucessfull(){
