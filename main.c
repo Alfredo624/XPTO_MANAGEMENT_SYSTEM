@@ -2,6 +2,7 @@
 
 // Constants declarations
 
+// Global variables come here
 int i;
 
 // 				#Structures start here
@@ -80,8 +81,8 @@ void header();
 
 void login(){
 	system("cls");
-	printf("\n\n\t\t\t\t\t\t WELCOME TO XPTO MANAGMENT SYSYTEM \t\t\t\t\t\t\n");
-	printf("\t\t\t\t\t\t\t\t 		Security 				  \t\t\t\t\t\t\n\n");
+	printf("\n\n\t\t WELCOME TO XPTO MANAGMENT SYSYTEM\n");
+	printf("\t\t\t\tSecurity");
 }
 
 void menu(){
@@ -94,7 +95,6 @@ int main() {
 	getchar();
 	return 0;
 }
-
 
 void errorMessage(){
 
