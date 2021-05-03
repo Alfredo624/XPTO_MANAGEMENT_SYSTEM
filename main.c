@@ -1,9 +1,28 @@
+#define _GNU_SOURCE
 #include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <windows.h>
 
 // Constants declarations
+#ifndef MAX_BUF
+#define MAX_BUF 200
+#endif
+
+#ifdef WINDOWS
+#include <direct.h>
+#define GetCurrentDir _getcwd
+#else
+#include <unistd.h>
+#define GetCurrentDir getcwd
+#endif
 
 // Global variables come here
-int i;
+char username[50], password[50];
+char row[101];
+int i, j;
 
 // 				#Structures start here
 
@@ -11,6 +30,7 @@ int i;
 struct employee{
 	int id;
 	char name[20];
+	char user_name[20];
 	char password[20];
 	char function[20];
 	char note[50];
@@ -70,20 +90,95 @@ struct company{
 // 					#Structures end here
 
 // Functions definitions
-void login();
-void menu();
-void errorMessage();
-void clearScreen();
-void exit();
-void footer();
-void header();
+void login(void);
+void menu(void);
+void errorMessage(void);
+void clearScreen(void);
+void footer(void);
+void header(void);
+void successful(void);
 
 void login(){
-	system("cls");
-	header();
-	//printf("\n\n\t\t WELCOME TO XPTO MANAGMENT SYSYTEM\n");
-	//printf("\t\t\t\tSecurity");
-	footer();
+	//system("cls");
+
+
+	FILE* file;
+	char curr_dir[MAX_BUF]; //Save the current location 
+	
+	char buff[FILENAME_MAX]; // Create buffer to hold path
+	GetCurrentDir(buff, FILENAME_MAX);
+	
+	strcpy(curr_dir, buff); 
+	char path[MAX_BUF] = "/data/employee_user.dat"; // Define directory
+
+	strcat(curr_dir, path); // Make the mix
+	printf("%s\n", curr_dir); // Print current location
+	
+	if(fopen(curr_dir, "r") == NULL) // Verify if the file exists
+		fopen(curr_dir, "w");
+	else
+		file = fopen(curr_dir, "r"); // Open the file.
+	
+	
+	char user_data[50], password_data[50];
+	int flag = -1; // If flag = -1 => Account not found; If flag = 0 => Wrong password; Otherwise correct password
+
+	do{		
+		printf("Username: ");
+		scanf("%s", username);
+		printf("Password: ");
+		scanf("%s", password);
+		fflush(stdin);
+
+		while(fgets(row, sizeof(row), file)){ // Search for credentials
+		
+			fflush(stdin);
+
+			i = j = 0;
+			while(row[i] != ' ' && j<50) // 32 is the ASCII code for "space". Did you get?
+			{
+				user_data[j] = row[i];
+				i++;
+				j++;
+			}
+			
+			j = 0; i++;
+			while(row[i] != '\0' && j<50){
+				password_data[j] = row[i];
+				printf("%c ", row[i]);
+				i++;
+				j++;
+			}
+
+			int tmp1 = strcmp(user_data, username);
+			int tmp2 = strcmp(password_data, password);
+
+			printf("%s - %s\n", password_data, password);
+			printf("%d - %d\n", tmp1, tmp2);
+
+			if(tmp1 == tmp2 && tmp1 == 0)
+				flag = 1;
+
+			if(tmp2 != 0)
+				flag = 0;
+
+			memset(user_data, '\0', sizeof(user_data));
+			memset(password_data, '\0', sizeof(password_data));
+		}
+
+		if(flag == -1){
+			printf("User not found.\nPress ENTER!\n");
+			getchar();
+		}
+		
+	}while(flag <= 0);
+
+	if(flag == 1)
+		successful();
+	else 
+		printf("Wrong password.\n");
+	
+	fclose(file); // Close the file.
 }
 
 void menu(){
@@ -97,12 +192,8 @@ int main() {
 	return 0;
 }
 
-void errorMessage(){
-
-}
-
-void exit(){
-
+void errorMessage(void){
+	printf("Failed!\n");
 }
 
 void clearScreen(){
@@ -114,12 +205,13 @@ void header(){
 	printf("\t\t\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb XPTO MANAGMENT SYSYTEM \xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\n");
 }
 
+
 void footer(){
 	time_t t;
 	time(&t);
 	printf("\n\t\tDate and time: %s\n",ctime(&t));
 }
 
-void sucessfull(){
-
+void successful(){
+	printf("Successful!\n");
 }
