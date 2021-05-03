@@ -99,43 +99,43 @@ void header(void);
 void successful(void);
 
 void login(){
-	//system("cls");
-
+	header();
+	footer();
 
 	FILE* file;
-	char curr_dir[MAX_BUF]; //Save the current location 
+	char curr_dir[MAX_BUF]; //Save the current location.
 	
-	char buff[FILENAME_MAX]; // Create buffer to hold path
+	char buff[FILENAME_MAX]; // Create buffer to hold path.
 	GetCurrentDir(buff, FILENAME_MAX);
 	
 	strcpy(curr_dir, buff); 
-	char path[MAX_BUF] = "/data/employee_user.dat"; // Define directory
+	char path[MAX_BUF] = "/data/employee_user.dat"; // Define directory.
 
-	strcat(curr_dir, path); // Make the mix
-	printf("%s\n", curr_dir); // Print current location
+	strcat(curr_dir, path); // Make the mix.
+	printf("%s\n", curr_dir); // Print current location.
 	
-	if(fopen(curr_dir, "r") == NULL) // Verify if the file exists
+	if(fopen(curr_dir, "r") == NULL) // Verify if the file exists.
 		fopen(curr_dir, "w");
 	else
 		file = fopen(curr_dir, "r"); // Open the file.
 	
 	
 	char user_data[50], password_data[50];
-	int flag = -1; // If flag = -1 => Account not found; If flag = 0 => Wrong password; Otherwise correct password
+	int flag = -1; // If flag = -1 => Account not found; If flag = 0 => Wrong password; Otherwise correct password.
 
-	do{		
+	while(flag!=1){		
 		printf("Username: ");
 		scanf("%s", username);
+		fflush(stdin);
 		printf("Password: ");
 		scanf("%s", password);
 		fflush(stdin);
 
-		while(fgets(row, sizeof(row), file)){ // Search for credentials
+		while(fgets(row, sizeof(row), file)){ // Search for credentials.
 		
 			fflush(stdin);
-
 			i = j = 0;
-			while(row[i] != ' ' && j<50) // 32 is the ASCII code for "space". Did you get?
+			while(row[i] != ' ') // 32 is the ASCII code for "space". Did you get?
 			{
 				user_data[j] = row[i];
 				i++;
@@ -143,41 +143,34 @@ void login(){
 			}
 			
 			j = 0; i++;
-			while(row[i] != '\0' && j<50){
+			while(row[i+1] != '\0'){
 				password_data[j] = row[i];
-				printf("%c ", row[i]);
 				i++;
 				j++;
 			}
 
-			int tmp1 = strcmp(user_data, username);
-			int tmp2 = strcmp(password_data, password);
+			int tmp1 = strcmp(user_data, username); // Check match between users.
+			int tmp2 = strcmp(password_data, password); // Check math between passwords.
 
-			printf("%s - %s\n", password_data, password);
-			printf("%d - %d\n", tmp1, tmp2);
-
-			if(tmp1 == tmp2 && tmp1 == 0)
+			if(tmp1 == 0 && tmp2 == 0) // When it's true, means that the credentials are correct.
 				flag = 1;
-
-			if(tmp2 != 0)
-				flag = 0;
-
+			
 			memset(user_data, '\0', sizeof(user_data));
 			memset(password_data, '\0', sizeof(password_data));
 		}
 
-		if(flag == -1){
-			printf("User not found.\nPress ENTER!\n");
-			getchar();
-		}
-		
-	}while(flag <= 0);
+		if(flag == -1)
+			printf("\nUser not found or wrong password.\n");
+		 else
+			successful();
 
-	if(flag == 1)
-		successful();
-	else 
-		printf("Wrong password.\n");
-	
+		printf("\nPress ENTER.\n");	
+		getchar();
+		
+		memset(username, '\0', sizeof(username));
+		memset(password, '\0', sizeof(password));
+	}
+
 	fclose(file); // Close the file.
 }
 
@@ -213,5 +206,5 @@ void footer(){
 }
 
 void successful(){
-	printf("Successful!\n");
+	printf("\nSuccessful!\n");
 }
