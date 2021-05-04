@@ -51,4 +51,4 @@ IDENTIDADES:
 
 FUNCIONALIDADES:
 1 - Inserir, Alterar, Apagar, Listar e Pesquisar as diversas Fichas;
-2 - Gestão de Entradas e Saídas dos Componentes, por Posto de Trabalho, por Tipologia de Condição/ Tipologia de Empresa, Garantias/ Reparação/ Abatimento;
+2 - Gestão de Entradas e Saídas dos Componentes, por Posto de Trabalho, por Tipologia de Condição/ Tipologia de Empresa, Garantias/ Reparação/ Abatimento.
