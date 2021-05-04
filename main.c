@@ -97,10 +97,9 @@ void clearScreen(void);
 void footer(void);
 void header(void);
 void successful(void);
+void readPassword(void);
 
 void login(){
-	header();
-	footer();
 
 	FILE* file;
 	char curr_dir[MAX_BUF]; //Save the current location.
@@ -112,7 +111,7 @@ void login(){
 	char path[MAX_BUF] = "/data/employee_user.dat"; // Define directory.
 
 	strcat(curr_dir, path); // Make the mix.
-	printf("%s\n", curr_dir); // Print current location.
+	//printf("%s\n", curr_dir); // Print current location.
 	
 	if(fopen(curr_dir, "r") == NULL) // Verify if the file exists.
 		fopen(curr_dir, "w");
@@ -124,52 +123,49 @@ void login(){
 	int flag = -1; // If flag = -1 => Account not found; If flag = 0 => Wrong password; Otherwise correct password.
 
 	while(flag!=1){		
-		printf("Username: ");
+		clearScreen();
+		header();
+		footer();
+
+		printf("\nUsername: ");
 		scanf("%s", username);
 		fflush(stdin);
 		printf("Password: ");
-		scanf("%s", password);
-		fflush(stdin);
+		readPassword(); // Read password using mask, COOL.
 
-		while(fgets(row, sizeof(row), file)){ // Search for credentials.
+		while(fscanf(file, "%s %s", &user_data, &password_data)!=EOF){ // Search for credentials.
 		
-			fflush(stdin);
-			i = j = 0;
-			while(row[i] != ' ') // 32 is the ASCII code for "space". Did you get?
-			{
-				user_data[j] = row[i];
-				i++;
-				j++;
-			}
-			
-			j = 0; i++;
-			while(row[i+1] != '\0'){
-				password_data[j] = row[i];
-				i++;
-				j++;
-			}
-
 			int tmp1 = strcmp(user_data, username); // Check match between users.
 			int tmp2 = strcmp(password_data, password); // Check math between passwords.
 
 			if(tmp1 == 0 && tmp2 == 0) // When it's true, means that the credentials are correct.
 				flag = 1;
-			
-			memset(user_data, '\0', sizeof(user_data));
-			memset(password_data, '\0', sizeof(password_data));
 		}
 
-		if(flag == -1)
-			printf("\nUser not found or wrong password.\n");
-		 else
-			successful();
+		char choice = ' ';
+		if(flag != 1){
+			printf("\n\nSorry! Login unsuccessful.\n");
+			do{	
+				printf("\nPress:\n[1] - Try again;\n[2] - Exit.\n");
+				printf("\nChoice: ");
+				scanf("%c", &choice);
+				fflush(stdin);
+			} while(choice!= '1' && choice != '2');
+			
+			flag--; // Decrease each time is entered wrong password. Once tried 3 times, the system is exited!
+		}
 
-		printf("\nPress ENTER.\n");	
-		getchar();
+		//printf("\nPress any KEY to continue.\n");
+		if(flag<-3)
+			printf("\n\nYou have exceeded the number of attempts.\n");
 		
-		memset(username, '\0', sizeof(username));
-		memset(password, '\0', sizeof(password));
+		if(choice == '2' || flag<-3){ 
+			printf("\nSee you later! Thank you.\n");
+			exit(0);
+		}
 	}
+	
+	successful();
 
 	fclose(file); // Close the file.
 }
@@ -178,10 +174,9 @@ void menu(){
 
 }
 
-// Program start running here
+// Program start running here.
 int main() {
 	login();
-	getchar();
 	return 0;
 }
 
@@ -190,7 +185,25 @@ void errorMessage(void){
 }
 
 void clearScreen(){
+	system("cls");
+}
 
+// Read password using mask, COOL.
+void readPassword(){
+	char key = '\0';
+	int index = 0;
+	
+	while(key != 13){
+		key = getch();
+
+		if(key != 13 && key != 8){
+			putchar('*');
+			password[index] = key;
+			index++;
+		}
+	}
+	password[index] = '\0'; // Determine the end of password.
+	fflush(stdin);
 }
 
 void header(){
@@ -206,5 +219,6 @@ void footer(){
 }
 
 void successful(){
-	printf("\nSuccessful!\n");
+	printf("\n\nLogin successful!\n\n");
+	printf("%s, WELCOME to XPTO MANAGEMENT SYSTEM! Feel free using the system ...\n", username);
 }
