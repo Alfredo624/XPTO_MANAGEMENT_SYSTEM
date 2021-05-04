@@ -11,10 +11,10 @@
 #define MAX_BUF 200
 #endif
 
-#ifdef WINDOWS
+#ifdef WINDOWS // It's for Windows SO
 #include <direct.h>
 #define GetCurrentDir _getcwd
-#else
+#else // It's for Linux SO
 #include <unistd.h>
 #define GetCurrentDir getcwd
 #endif
