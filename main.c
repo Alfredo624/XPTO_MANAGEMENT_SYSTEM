@@ -1,6 +1,7 @@
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <ctype.h>
+#include <locale.h>
 #include <string.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -89,6 +90,13 @@ struct company{
 
 // 					#Structures end here
 
+// Menu items
+void Components(void);
+void WorkOffice(void);
+void Worker(void);
+void Operations(void);
+void Company(void);
+
 // Functions definitions
 void login(void);
 void menu(void);
@@ -98,6 +106,21 @@ void footer(void);
 void header(void);
 void successful(void);
 void readPassword(void);
+void fordelay(void);
+
+// Menu items
+void Components(void);
+void WorkOffice(void);
+void Worker(void);
+void Operations(void);
+void Company(void);
+
+
+// Program start running here.
+int main() {
+	login();
+	return 0;
+}
 
 void login(){
 
@@ -127,10 +150,10 @@ void login(){
 		header();
 		footer();
 
-		printf("\nUsername: ");
+		printf("\n\t\tUsuario: ");
 		scanf("%s", username);
 		fflush(stdin);
-		printf("Password: ");
+		printf("\t\tSenha: ");
 		readPassword(); // Read password using mask, COOL.
 
 		while(fscanf(file, "%s %s", &user_data, &password_data)!=EOF){ // Search for credentials.
@@ -142,25 +165,32 @@ void login(){
 				flag = 1;
 		}
 
-		char choice = ' ';
+		char choice = '\0';
 		if(flag != 1){
-			printf("\n\nSorry! Login unsuccessful.\n");
+			printf("\n\n\t\tDesculpa! Credenciais incorrectas.\n");
 			do{	
-				printf("\nPress:\n[1] - Try again;\n[2] - Exit.\n");
-				printf("\nChoice: ");
+				printf("\n\t\tPressione:\n\t\t[1] - Tentar novamente;\n\t\t[2] - Sair.\n");
+				printf("\n\t\tOpecao: ");
 				scanf("%c", &choice);
 				fflush(stdin);
 			} while(choice!= '1' && choice != '2');
 			
 			flag--; // Decrease each time is entered wrong password. Once tried 3 times, the system is exited!
+				
+			// Reset variables
+			memset(username, '\0', sizeof(username));
+			memset(password, '\0', sizeof(password));
+
+			memset(user_data, '\0', sizeof(user_data));
+			memset(password_data, '\0', sizeof(password_data));
 		}
 
 		//printf("\nPress any KEY to continue.\n");
 		if(flag<-3)
-			printf("\n\nYou have exceeded the number of attempts.\n");
+			printf("\n\nExcedeu o limite de tentativas.\n");
 		
 		if(choice == '2' || flag<-3){ 
-			printf("\nSee you later! Thank you.\n");
+			printf("\nAte mais! Obrigado.\n");
 			exit(0);
 		}
 	}
@@ -170,18 +200,36 @@ void login(){
 	fclose(file); // Close the file.
 }
 
-void menu(){
+void mainMenu(){
+	char choice = '\0';
+    system("cls");
+    printf("\n\n\t\t\t       XPTO MANAGEMENT SYSTEM");
+    printf("\n\n\n\t\t\t\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2 MENU PRINCIPAL \xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2\xB2");
+    printf("\n\n\t\t[1] - Componentes;\n\t\t[2] - Posto de trabalho;\n\t\t[3] - Funcionarios;\n\t\t[4] - Operacoes;\n\t\t[5] - Empresas;\n\t\t[6] - Sair.\n\n\t\tOperacoes: ");
+    scanf("%c", &choice); fflush(stdin);
 
+    switch(choice)
+    {
+        case '1': Components();
+        break;
+        case '2': WorkOffice();
+        break;
+        case '3': Worker();
+        break;
+        case '4': Operations();
+        break;
+        case '5': Company();
+        break;
+        case '6': exit(0);
+        break;
+        default: mainMenu();
+        break;
+    }
 }
 
-// Program start running here.
-int main() {
-	login();
-	return 0;
-}
 
 void errorMessage(void){
-	printf("Failed!\n");
+	printf("\t\tFalha!\n");
 }
 
 void clearScreen(){
@@ -215,10 +263,35 @@ void header(){
 void footer(){
 	time_t t;
 	time(&t);
-	printf("\n\t\tDate and time: %s\n",ctime(&t));
+	printf("\n\t\tData e tempo: %s\n",ctime(&t));
 }
 
 void successful(){
-	printf("\n\nLogin successful!\n\n");
-	printf("%s, WELCOME to XPTO MANAGEMENT SYSTEM! Feel free using the system ...\n", username);
+	printf("\n\n\t\tUsuario logado com sucesso!\n\n");
+	username[0] = toupper(username[0]);
+	printf("\t\t%s, seja bem-vindo ao XPTO MANAGEMENT SYSTEM! \n\t\tSinta-te a vontade usando o sistema ...\n", username);
+
+	printf("\n");
+	getch();
+	mainMenu();
+}
+
+void Components(){
+
+}
+
+void WorkOffice(){
+
+}
+
+void Worker(){
+
+}
+
+void Operations(){
+
+}
+
+void Company(){
+	
 }

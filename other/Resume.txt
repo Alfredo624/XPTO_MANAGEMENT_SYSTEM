@@ -1,6 +1,7 @@
 - GESTÃO DE EQUIPAMENTOS NA EMPRESA XPTO
 
 IDENTIDADES:
+
 1 - Componentes:
  - identificação, 
  - designação, 
