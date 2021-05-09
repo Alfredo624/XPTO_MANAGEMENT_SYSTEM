@@ -113,7 +113,7 @@ void UpdateWorker(void);
 void DeleteWorker(void);
 void ListWorker(void);
 void SearchWorker(void);
-int ExistsWorker(char * p);
+int ExistsWorker(char p[]);
 
 
 // Functions definitions
@@ -493,7 +493,7 @@ void InsertWorker(){
 		Worker();
 	}
 
-	if(fwrite(&user_tmp, sizeof(user_tmp), 1, file) != NULL)
+	if(fwrite(&user_tmp, sizeof(user_tmp), 1, file))
 		printf("\n\t\tFuncionario inserido com sucesso!\n\n");
 	else {
 		printf("Erro de insercao\n");
@@ -529,11 +529,24 @@ int ExistsWorker(char p[]){
 	else
 		file = fopen(curr_dir, "r"); // Open the file.
 
-	while(fread(&user_tmp, sizeof(user_tmp), 1, file) == 1) // Search for credentials.
-		if(strcmp(&user_tmp.username, *p) == 0)
+	int count = 1;
+	while(fread(&user_tmp, sizeof(user_tmp), 1000, file) == 1){ // Search for credentials.
+
+		int tmp1 = strcmp(p, user_tmp.username);
+
+		if(tmp1 == 0){
+			printf("\n\t\tNome: %s\n\t\tNome de Usuario: %s\n\t\tSenha: ****\n\t\tFuncao: %s\n\t\tNota: %s\n", 
+			user_tmp.name, user_tmp.username, user_tmp.function, user_tmp.note);
 			flag = 1;
+		}
+
+		count++;
+	}
 
 	fclose(file); // Close the file.
+
+	printf("\n\n\t\tTOTAL =  %d\n\n", count - 1);
+	pressAnyKey();
 
 	return flag;
 }
