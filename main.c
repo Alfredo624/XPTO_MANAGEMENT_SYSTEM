@@ -21,22 +21,24 @@
 #endif
 
 // Global variables come here
-char username[50], password[50];
 char row[101];
 int i, j;
 char choice = '\0';
+FILE* file;
+char curr_dir[MAX_BUF]; //Save the current location.
+char buff[FILENAME_MAX]; // Create buffer to hold path.
 
 // 				#Structures start here
 
 //Employee and User structure
-struct employee{
+struct _employee{
 	int id;
-	char name[20];
-	char user_name[20];
-	char password[20];
-	char function[20];
-	char note[50];
-};
+	char name[50];
+	char username[50];
+	char password[50];
+	char function[50];
+	char note[10000];
+} employee, user_tmp;
 
 //Components structure
 struct components{
@@ -105,6 +107,15 @@ void Delete(void);
 void List(void);
 void Search(void);
 
+// Worker CRUD
+void InsertWorker(void);
+void UpdateWorker(void);
+void DeleteWorker(void);
+void ListWorker(void);
+void SearchWorker(void);
+int ExistsWorker(char p[]);
+
+
 // Functions definitions
 void login(void);
 void menu(void);
@@ -115,6 +126,8 @@ void header(void);
 void successful(void);
 void readPassword(void);
 void fordelay(void);
+void Exit(void);
+void pressAnyKey(void);
 
 
 // Program start running here.
@@ -125,49 +138,52 @@ int main() {
 
 void login(){
 
-	FILE* file;
-	char curr_dir[MAX_BUF]; //Save the current location.
-	
-	char buff[FILENAME_MAX]; // Create buffer to hold path.
 	GetCurrentDir(buff, FILENAME_MAX);
 	
 	strcpy(curr_dir, buff); 
-	char path[MAX_BUF] = "/data/employee_user.dat"; // Define directory.
+	char path[MAX_BUF] = "/data/employee.bin"; // Define directory.
 
 	strcat(curr_dir, path); // Make the mix.
 	//printf("%s\n", curr_dir); // Print current location.
 	
-	if(fopen(curr_dir, "r") == NULL) // Verify if the file exists.
-		fopen(curr_dir, "w");
-	else
-		file = fopen(curr_dir, "r"); // Open the file.
-	
-	
-	char user_data[50], password_data[50];
 	int flag = -1; // If flag = -1 => Account not found; If flag = 0 => Wrong password; Otherwise correct password.
 
 	while(flag!=1){		
+		fflush(stdin);
 		clearScreen();
 		header();
 		footer();
 		printf("\n\t\tUsuario: ");
-		scanf("%s", username);
+		scanf("%s", employee.username);
 		fflush(stdin);
 		printf("\t\tSenha: ");
 		readPassword(); // Read password using mask, COOL.
 
-		while(fscanf(file, "%s %s", &user_data, &password_data)!=EOF){ // Search for credentials.
-		
-			int tmp1 = strcmp(user_data, username); // Check match between users.
-			int tmp2 = strcmp(password_data, password); // Check math between passwords.
+		if(fopen(curr_dir, "r") == NULL) // Verify if the file exists.
+			fopen(curr_dir, "w");
+		else
+			file = fopen(curr_dir, "r"); // Open the file.
+
+		if(strcmp(employee.username, "admin") == 0)
+			flag = 1;
+
+		while(fread(&user_tmp, sizeof(user_tmp), 1, file) == 1){ // Search for credentials.
+			int tmp1 = strcmp(user_tmp.username, employee.username); // Check match between users.
+			int tmp2 = strcmp(user_tmp.password, employee.password); // Check math between passwords.
 
 			if(tmp1 == 0 && tmp2 == 0) // When it's true, means that the credentials are correct.
+			{
 				flag = 1;
+				break;
+			}
 		}
+
+		fclose(file); // Close the file.
 
 		char choice = '\0';
 		if(flag != 1){
 			printf("\n\n\t\tDesculpa! Credenciais incorrectas.\n");
+			
 			do{	
 				printf("\n\t\tPressione:\n\t\t[1] - Tentar novamente;\n\t\t[2] - Sair.\n");
 				printf("\n\t\tOpcao: ");
@@ -176,10 +192,6 @@ void login(){
 			} while(choice!= '1' && choice != '2');
 			
 			flag--; // Decrease each time is entered wrong password. Once tried 3 times, the system is exited!
-				
-			// Reset variables
-			memset(username, '\0', sizeof(username));
-			memset(password, '\0', sizeof(password));
 		}
 
 		//printf("\nPress any KEY to continue.\n");
@@ -187,21 +199,19 @@ void login(){
 			printf("\n\nExcedeu o limite de tentativas.\n");
 		
 		if(choice == '2' || flag<-3){ 
-			printf("\nAte mais! Obrigado.\n");
-			exit(0);
+			Exit();
 		}
 	}
 	
 	successful();
 
-	fclose(file); // Close the file.
 }
 
 void mainMenu(){
-    system("cls");
 	header();
+	footer();
     printf("\n\t\t::: MENU PRINCIPAL :::");
-    printf("\n\n\t\t[1] => Componentes:\n\t\t[2] => Posto de trabalho:\n\t\t[3] => Funcionarios:\n\t\t[4] => Operacoes:\n\t\t[5] => Empresas:\n\t\t[6] => Sai.\n\n\t\tOperacoes: ");
+    printf("\n\n\t\t[1] => Componentes:\n\t\t[2] => Posto de trabalho:\n\t\t[3] => Funcionarios:\n\t\t[4] => Operacoes:\n\t\t[5] => Empresas:\n\t\t[6] => Voltar <=::\n\t\t[7] => Sai.\n\n\t\tOperacoes: ");
     scanf("%c", &choice); fflush(stdin);
 
     switch(choice)
@@ -216,7 +226,9 @@ void mainMenu(){
         break;
         case '5': Company();
         break;
-        case '6': exit(0);
+        case '6': login();
+        break;
+        case '7': Exit();
         break;
         default: mainMenu();
         break;
@@ -242,17 +254,18 @@ void readPassword(){
 
 		if(key != 13 && key != 8){
 			putchar('*');
-			password[index] = key;
+			employee.password[index] = key;
 			index++;
 		}
 	}
-	password[index] = '\0'; // Determine the end of password.
+	employee.password[index] = '\0'; // Determine the end of password.
 	fflush(stdin);
 }
 
 void header(){
+	system("cls");
 	printf("\n");
-	printf("\t\t\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb XPTO MANAGMENT SYSYTEM \xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\n");
+	printf("\t\t\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb XPTO MANAGMENT SYSTEM \xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\n");
 }
 
 
@@ -262,20 +275,26 @@ void footer(){
 	printf("\n\t\tData e tempo: %s\n",ctime(&t));
 }
 
+void Exit(){
+	printf("\n\t\t Ate mais! Obrigado.\n");
+	exit(0);
+}
+
 void successful(){
 	printf("\n\n\t\tUsuario logado com sucesso!\n\n");
-	username[0] = toupper(username[0]);
-	printf("\t\t%s, seja bem-vindo ao XPTO MANAGEMENT SYSTEM! \n\t\tSinta-te a vontade usando o sistema ...\n\n", username);
-	printf("\t\tPressione qualquer tecla para continuar ... ");
-	getch();
+	char u[20]; // It's an auxiliary variable used to print username.
+	strcpy(u, employee.username);
+	u[0] = toupper(u[0]);
+	printf("\t\t%s, seja bem-vindo ao XPTO MANAGEMENT SYSTEM! \n\t\tSinta-te a vontade usando o sistema ...\n\n", u);
+	
+	pressAnyKey();
 	mainMenu();
 }
 
 void Components(){
-	system("cls");
 	header();
     printf("\n\t\t::: MENU COMPONENTES :::");
-    printf("\n\n\t\t[1] => Inserir:\n\t\t[2] => Alterar:\n\t\t[3] => Apagar:\n\t\t[4] => Listar:\n\t\t[5] => Pesquisar:\n\t\t[6] => Sair.\n\n\t\tOperacoes: ");
+    printf("\n\n\t\t[1] => Inserir:\n\t\t[2] => Alterar:\n\t\t[3] => Apagar:\n\t\t[4] => Listar:\n\t\t[5] => Pesquisar:\n\t\t[6] => Sair.\n\n\t\tOperacao: ");
 	
     switch(choice)
     {
@@ -289,7 +308,7 @@ void Components(){
         break;
         case '5': Search();
         break;
-        case '6': exit(0);
+        case '6': Exit();
         break;
         default: Components();
         break;
@@ -297,7 +316,6 @@ void Components(){
 }
 
 void WorkOffice(){
-	system("cls");
 	header();
     printf("\n\t\t::: MENU POSTOS DE TRABALHOS :::");
     printf("\n\n\t\t[1] => Inserir:\n\t\t[2] => Alterar:\n\t\t[3] => Apagar:\n\t\t[4] => Listar:\n\t\t[5] => Pesquisar:\n\t\t[6] => Sair.\n\n\t\tOperacoes: ");
@@ -314,7 +332,7 @@ void WorkOffice(){
         break;
         case '5': Search();
         break;
-        case '6': exit(0);
+        case '6': Exit();
         break;
         default: WorkOffice();
         break;
@@ -322,24 +340,28 @@ void WorkOffice(){
 }
 
 void Worker(){
-	system("cls");
 	header();
+	footer();
     printf("\n\t\t::: MENU FUNCIONARIOS :::");
-	printf("\n\n\t\t[1] => Inserir:\n\t\t[2] => Alterar:\n\t\t[3] => Apagar:\n\t\t[4] => Listar:\n\t\t[5] => Pesquisar:\n\t\t[6] => Sair.\n\n\t\tOperacoes: ");
+	printf("\n\n\t\t[1] => Inserir:\n\t\t[2] => Alterar:\n\t\t[3] => Apagar:\n\t\t[4] => Listar:\n\t\t[5] => Pesquisar:\n\t\t[6] => Voltar:\n\t\t[7] => Sair.\n\n\t\tOperacoes: ");
 	
+	scanf("%c", &choice); fflush(stdin);
+
     switch(choice)
     {
-        case '1': Insert();
+        case '1': InsertWorker();
         break;
-        case '2': Update();
+        case '2': UpdateWorker();
         break;
-        case '3': Delete();
+        case '3': DeleteWorker();
         break;
-        case '4': List();
+        case '4': ListWorker();
         break;
-        case '5': Search();
+        case '5': SearchWorker();
         break;
-        case '6': exit(0);
+        case '6': mainMenu();
+        break;
+        case '7': exit(0);
         break;
         default: Worker();
         break;
@@ -351,6 +373,7 @@ void Operations(){
 	header();
     printf("\n\t\t:: MENU OPERACOES :::");
 	printf("\n\n\t\t[1] => Inserir:\n\t\t[2] => Alterar:\n\t\t[3] => Apagar:\n\t\t[4] => Listar:\n\t\t[5] => Pesquisar:\n\t\t[6] => Sair.\n\n\t\tOperacoes: ");
+	scanf("%c", &choice); fflush(stdin);
 
 	
     switch(choice)
@@ -397,4 +420,181 @@ void Company(){
         default: Company();
         break;
     }
+}
+
+void InsertWorker(){
+	header();
+	footer();
+	
+	printf("\n\t\t:: INSERIR FUNCIONARIO :::");
+	printf("\n\n\t\tNome: ");
+	gets(user_tmp.name); fflush(stdin);
+	printf("\t\tNome de usuario: ");
+	scanf("%s", user_tmp.username); fflush(stdin);
+
+	while(ExistsWorker(&user_tmp.username) == 1){
+		printf("\n\t\tUsuario ja existente!\n");
+		printf("\t\tNome de usuario: ");
+		scanf("%s", user_tmp.username); fflush(stdin);
+	}
+	
+	printf("\n\t\tFuncoes: \n");
+
+	GetCurrentDir(buff, FILENAME_MAX);
+	strcpy(curr_dir, buff); 
+	char path[MAX_BUF] = "/data/functions.dat"; // Define directory.
+
+	strcat(curr_dir, path); // Make the mix.
+	
+	if(fopen(curr_dir, "r") == NULL) // Verify if the file exists.
+		fopen(curr_dir, "w");
+	else
+		file = fopen(curr_dir, "r"); // Open the file.
+	
+	char read[50];
+	char functions[50][100]; i = 1;
+	while(fscanf(file, "%s", read) != EOF){
+		strcpy(functions[i], read);
+		printf("\t\t => [%d] - %s\n", i, functions[i]);;
+		i++;
+	}
+
+	fclose(file);
+
+	int option = i;
+
+	while(option<=0 || option>=i){
+		printf("\n\t\tOpcao: ");
+		scanf("%d", &option); fflush(stdin);
+
+		if(option<0 || option>=i){
+			printf("\t\tOpcao invalida!\n");
+		}
+	} 
+
+	strcpy(user_tmp.function, functions[option]);
+	strcpy(user_tmp.password, "12345");
+
+	printf("\n\t\tNota: ");
+	gets(user_tmp.note); fflush(stdin);
+
+	GetCurrentDir(buff, FILENAME_MAX);
+	strcpy(curr_dir, buff); 
+	strcpy(path, "/data/employee.bin"); // Define directory.
+	strcat(curr_dir, path); // Make the mix.
+	
+	if(fopen(curr_dir, "r") == NULL) // Verify if the file exists.
+		fopen(curr_dir, "a");
+	else
+		file = fopen(curr_dir, "a"); // Open the file.
+
+	if(file == NULL){
+		printf("Problemas na abertura do ficheiro.\n\n");
+		Worker();
+	}
+
+	if(fwrite(&user_tmp, sizeof(user_tmp), 1, file) != NULL)
+		printf("\n\t\tFuncionario inserido com sucesso!\n\n");
+	else {
+		printf("Erro de insercao\n");
+		Worker();
+	}
+
+	fclose(file);
+
+	pressAnyKey();
+
+	Worker();
+}
+
+void UpdateWorker(){
+
+}
+
+void DeleteWorker(){
+
+}
+
+int ExistsWorker(char p[]){
+	int flag = 0;
+
+	GetCurrentDir(buff, FILENAME_MAX);
+	strcpy(curr_dir, buff); 
+	char path[MAX_BUF] = "/data/employee.bin"; // Define directory.
+
+	strcat(curr_dir, path); // Make the mix.
+
+	if(fopen(curr_dir, "r") == NULL) // Verify if the file exists.
+		fopen(curr_dir, "w");
+	else
+		file = fopen(curr_dir, "r"); // Open the file.
+
+	while(fread(&user_tmp, sizeof(user_tmp), 1, file) == 1) // Search for credentials.
+		if(strcmp(&user_tmp.username, *p) == 0)
+			flag = 1;
+
+	fclose(file); // Close the file.
+
+	return flag;
+}
+
+void ListWorker(){
+	header();
+	footer();
+	
+	printf("\n\t\t:: LISTAGEM DE FUNCIONARIOS :::\n");
+
+	GetCurrentDir(buff, FILENAME_MAX);
+	strcpy(curr_dir, buff); 
+	char path[MAX_BUF] = "/data/employee.bin"; // Define directory.
+
+	strcat(curr_dir, path); // Make the mix.
+
+	if(fopen(curr_dir, "r") == NULL) // Verify if the file exists.
+		fopen(curr_dir, "w");
+	else
+		file = fopen(curr_dir, "r"); // Open the file.
+
+	int count = 1;
+	while(fread(&user_tmp, sizeof(user_tmp), 1, file) == 1){ // Search for credentials.
+		printf("\n\t\tNome: %s\n\t\tNome de Usuario: %s\n\t\tSenha: ****\n\t\tFuncao: %s\n\t\tNota: %s\n", 
+			user_tmp.name, user_tmp.username, user_tmp.function, user_tmp.note);
+		count++;
+	}
+
+	fclose(file); // Close the file.
+
+	printf("\n\n\t\tTOTAL =  %d\n\n", count - 1);
+	pressAnyKey();
+	Worker();
+}
+
+void SearchWorker(){
+
+}
+
+void pressAnyKey(){
+	printf("\t\tPressione qualquer tecla para continuar ... ");
+	getch();
+}
+
+// Sub-menus items
+void Insert(){
+
+}
+
+void Update(){
+
+}
+
+void Delete(){
+
+}
+
+void List(){
+
+}
+
+void Search(){
+
 }
