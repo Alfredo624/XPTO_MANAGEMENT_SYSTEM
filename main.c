@@ -426,13 +426,13 @@ void InsertWorker(){
 	header();
 	footer();
 	
-	printf("\n\t\t:: INSERIR FUNCIONARIO :::");
+	printf("\n\t\t:: INSERCAO DE FUNCIONARIO :::");
 	printf("\n\n\t\tNome: ");
 	gets(user_tmp.name); fflush(stdin);
 	printf("\t\tNome de usuario: ");
 	scanf("%s", user_tmp.username); fflush(stdin);
 
-	while(ExistsWorker(&user_tmp.username) == 1){
+	while(ExistsWorker(user_tmp.username) == 1){
 		printf("\n\t\tUsuario ja existente!\n");
 		printf("\t\tNome de usuario: ");
 		scanf("%s", user_tmp.username); fflush(stdin);
@@ -508,7 +508,97 @@ void InsertWorker(){
 }
 
 void UpdateWorker(){
+	header();
+	footer();
+	
+	printf("\n\t\t:: ATUALIZACAO DE FUNCIONARIO :::\n");
+	printf("\n\t\tNome de usuario: ");
+	scanf("%s", user_tmp.username); fflush(stdin);
 
+	if(ExistsWorker(user_tmp.username) == 0){
+		puts("\n\n\t\tUsuario inexistente!\n");
+		printf("\n\t\tTentar novamente ? Yes/No: ");
+		scanf("%c", &choice);
+		fflush(stdin);
+
+		choice = toupper(choice);
+
+		if(choice == 'Y')
+			UpdateWorker();
+		else Worker();
+	}
+	else
+	{	
+		printf("\n\n\t\tNome: ");
+		gets(user_tmp.name); fflush(stdin);
+
+		printf("\n\t\tFuncoes: \n");
+
+		GetCurrentDir(buff, FILENAME_MAX);
+		strcpy(curr_dir, buff); 
+		char path[MAX_BUF] = "/data/functions.dat"; // Define directory.
+
+		strcat(curr_dir, path); // Make the mix.
+		
+		if(fopen(curr_dir, "r") == NULL) // Verify if the file exists.
+			fopen(curr_dir, "w");
+		else
+			file = fopen(curr_dir, "r"); // Open the file.
+		
+		char read[50];
+		char functions[50][100]; i = 1;
+		while(fscanf(file, "%s", read) != EOF){
+			strcpy(functions[i], read);
+			printf("\t\t => [%d] - %s\n", i, functions[i]);;
+			i++;
+		}
+
+		fclose(file);
+
+		int option = i;
+
+		while(option<=0 || option>=i){
+			printf("\n\t\tOpcao: ");
+			scanf("%d", &option); fflush(stdin);
+
+			if(option<0 || option>=i){
+				printf("\t\tOpcao invalida!\n");
+			}
+		} 
+
+		strcpy(user_tmp.function, functions[option]);
+		strcpy(user_tmp.password, "12345");
+
+		printf("\n\t\tNota: ");
+		gets(user_tmp.note); fflush(stdin);
+
+		GetCurrentDir(buff, FILENAME_MAX);
+		strcpy(curr_dir, buff); 
+		strcpy(path, "/data/employee.bin"); // Define directory.
+		strcat(curr_dir, path); // Make the mix.
+		
+		if(fopen(curr_dir, "r") == NULL) // Verify if the file exists.
+			fopen(curr_dir, "a");
+		else
+			file = fopen(curr_dir, "a"); // Open the file.
+
+		if(file == NULL){
+			printf("Problemas na abertura do ficheiro.\n\n");
+			Worker();
+		}
+
+		if(fwrite(&user_tmp, sizeof(user_tmp), 1, file))
+			printf("\n\t\tFuncionario inserido com sucesso!\n\n");
+		else {
+			printf("Erro de insercao\n");
+			Worker();
+		}
+
+		fclose(file);
+	}
+
+	pressAnyKey();
+	Worker();
 }
 
 void DeleteWorker(){
@@ -530,23 +620,14 @@ int ExistsWorker(char p[]){
 		file = fopen(curr_dir, "r"); // Open the file.
 
 	int count = 1;
-	while(fread(&user_tmp, sizeof(user_tmp), 1000, file) == 1){ // Search for credentials.
-
-		int tmp1 = strcmp(p, user_tmp.username);
-
-		if(tmp1 == 0){
-			printf("\n\t\tNome: %s\n\t\tNome de Usuario: %s\n\t\tSenha: ****\n\t\tFuncao: %s\n\t\tNota: %s\n", 
-			user_tmp.name, user_tmp.username, user_tmp.function, user_tmp.note);
+	struct _employee user_tmp;
+	while(fread(&user_tmp, sizeof(user_tmp), 1, file) == 1){ // Search for credentials.
+	
+		if(strcmp(p, user_tmp.username) == 0)
 			flag = 1;
-		}
-
-		count++;
 	}
 
-	fclose(file); // Close the file.
-
-	printf("\n\n\t\tTOTAL =  %d\n\n", count - 1);
-	pressAnyKey();
+	fclose(file); // Close the file.´
 
 	return flag;
 }
