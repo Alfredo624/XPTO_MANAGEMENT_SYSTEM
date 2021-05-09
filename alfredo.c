@@ -495,6 +495,15 @@ void InsertWorker(){
 
 	if(fwrite(&user_tmp, sizeof(user_tmp), 1, file))
 		printf("\n\t\tFuncionario inserido com sucesso!\n\n");
+
+		printf("\n\t\tAdicionar mais ? Sim/Nao: ");
+		scanf("%c", &choice);
+		fflush(stdin);
+
+		choice = toupper(choice);
+
+		if(choice == 'S')
+			InsertWorker();
 	else {
 		printf("Erro de insercao\n");
 		Worker();
@@ -663,7 +672,7 @@ void ListWorker(){
 }
 
 void SearchWorker(){
-
+	
 }
 
 void pressAnyKey(){
