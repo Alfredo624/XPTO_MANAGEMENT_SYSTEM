@@ -619,7 +619,6 @@ int ExistsWorker(char p[]){
 	else
 		file = fopen(curr_dir, "r"); // Open the file.
 
-	int count = 1;
 	struct _employee user_tmp;
 	while(fread(&user_tmp, sizeof(user_tmp), 1, file) == 1){ // Search for credentials.
 	
