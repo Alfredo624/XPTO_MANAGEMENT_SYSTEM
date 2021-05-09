@@ -113,7 +113,7 @@ void UpdateWorker(void);
 void DeleteWorker(void);
 void ListWorker(void);
 void SearchWorker(void);
-int ExistsWorker(char p[]);
+int ExistsWorker(char * p);
 
 
 // Functions definitions
