@@ -130,6 +130,7 @@ void readPassword(void);
 void fordelay(void);
 void Exit(void);
 void pressAnyKey(void);
+int searchWildCard(char key[]);
 
 
 // Program start running here.
@@ -763,6 +764,34 @@ void ListWorker(){
 }
 
 void SearchWorker(){
+	header();
+	footer();
+	
+	printf("\n\t\t:: PESQUISA DE FUNCIONARIO :::\n");
+	printf("\n\t\tPesquisar: ");
+	char key[100];
+	scanf("%s", key); fflush(stdin);
+	
+	GetCurrentDir(buff, FILENAME_MAX);
+	strcpy(curr_dir, buff); 
+	char path[MAX_BUF] = "/data/employee.bin"; // Define directory.
+
+	strcat(curr_dir, path); // Make the mix.
+
+	if(fopen(curr_dir, "r") == NULL) // Verify if the file exists.
+		fopen(curr_dir, "w");
+	else
+		file = fopen(curr_dir, "r"); // Open the file.
+
+	struct employee user_tmp;
+	while(fread(&user_tmp, sizeof(user_tmp), 1, file) == 1){ // Search for credentials.
+		// Verify here
+		if(strcmp(key, user_tmp.username) == 0 || searchWildCard(key) == 0){
+			//Print here
+		}
+	}
+
+	fclose(file); // Close the file.´
 
 }
 
@@ -790,4 +819,10 @@ void List(){
 
 void Search(){
 
+}
+
+
+int searchWildCard(char key[]){
+	// Code goes here
+	return 0;
 }
