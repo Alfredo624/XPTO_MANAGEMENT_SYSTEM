@@ -130,7 +130,7 @@ void readPassword(void);
 void fordelay(void);
 void Exit(void);
 void pressAnyKey(void);
-int searchWildCard(char key[]);
+int searchWildCard(char text[], char key[], int n, int m);
 
 
 // Program start running here.
@@ -364,7 +364,7 @@ void Worker(){
         break;
         case '6': mainMenu();
         break;
-        case '7': exit(0);
+        case '7': Exit();
         break;
         default: Worker();
         break;
@@ -786,13 +786,23 @@ void SearchWorker(){
 	struct employee user_tmp;
 	while(fread(&user_tmp, sizeof(user_tmp), 1, file) == 1){ // Search for credentials.
 		// Verify here
-		if(strcmp(key, user_tmp.username) == 0 || searchWildCard(key) == 0){
+
+		int tmp1 = strcmp(key, user_tmp.username);
+		int tmp2 = searchWildCard(user_tmp.username, key, strlen(user_tmp.username), strlen(key));
+
+		printf("%d %d\n", tmp1, tmp2);
+
+		if(tmp1 == 0 || tmp2 == 1){
 			//Print here
+			printf("\n\t\tNome: %s\n\t\tNome de Usuario: %s\n\t\tSenha: ****\n\t\tFuncao: %s\n\t\tNota: %s\n", 
+				user_tmp.name, user_tmp.username, user_tmp.function, user_tmp.note);
 		}
 	}
+	fclose(file); // Close the file.
 
-	fclose(file); // Close the file.´
-
+	printf("\n");
+	pressAnyKey();
+	Worker();
 }
 
 void pressAnyKey(){
@@ -822,7 +832,44 @@ void Search(){
 }
 
 
-int searchWildCard(char key[]){
+int searchWildCard(char text[], char key[], int n, int m){
 	// Code goes here
-	return 0;
+	// Empty text can only math with empty key
+	if(m == 0)
+		return (n == 0);
+
+	//Lookup table for storing results of sub-problems
+	int dp[n+1][m+1];
+	
+	//Initialize lookup table to to false
+	memset(dp, 0, sizeof(dp));
+
+	//Empty text can math with empty key
+	dp[0][0] = 1;
+
+	//Only '*' can math with empty key
+	for (j = 1; j<=m; j++)
+		if(key[j-1] == '*')
+			dp[0][j] = dp[0][j-1];
+
+	//Fill the table in bottom-up manner
+	for (i = 1; i<=n; i++)
+		for (j = 1; j<=m; j++)
+			// There are two cases if we find a '*'
+			// a) We ignore '*' character and move
+			// 	to next character in the text,
+			// i.e., '*' indicates an empty sequence.
+			// b) '*' character matches with ith character in key
+
+ 			if(key[j-1] == '*')
+				dp[i][j] = dp[i][j-1] || dp[i-1][j];
+			else 
+				if(key[j-1] == '?' || text[i-1] == key[j-1])
+					dp[i][j] = dp[i-1][j-1];
+
+			// If characters don't match
+			else 
+				dp[i][j] = 0;
+
+	return dp[n][m];
 }
