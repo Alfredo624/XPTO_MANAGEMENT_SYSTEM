@@ -727,7 +727,7 @@ int ExistsWorker(char p[]){
 			flag = 1;
 	}
 
-	fclose(file); // Close the file.´
+	fclose(file); // Close the file.Â´
 
 	return flag;
 }
@@ -791,12 +791,9 @@ void SearchWorker(){
 	
 		// Verify here
 		
-			puts(user_tmp);
-
 		int tmp1 = strcmp(key, user_tmp.username);
 		int tmp2 = compare(key, user_tmp.username); 
 
-	
 
 		if(tmp1 == 0 || tmp2 == 1){
 			//Print here
