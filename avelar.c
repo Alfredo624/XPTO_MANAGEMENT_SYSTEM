@@ -794,7 +794,6 @@ void SearchWorker(){
 		int tmp1 = strcmp(key, user_tmp.username);
 		int tmp2 = compare(key, user_tmp.username); 
 
-
 		if(tmp1 == 0 || tmp2 == 1){
 			//Print here
 			printf("\n\t\tNome: %s\n\t\tNome de Usuario: %s\n\t\tSenha: ****\n\t\tFuncao: %s\n\t\tNota: %s\n", 

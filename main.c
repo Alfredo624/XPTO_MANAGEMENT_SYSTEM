@@ -131,6 +131,7 @@ void fordelay(void);
 void Exit(void);
 void pressAnyKey(void);
 int searchWildCard(char text[], char key[], int n, int m);
+int searchWildCard_v2(char * frist, char * second);
 
 
 // Program start running here.
@@ -788,9 +789,9 @@ void SearchWorker(){
 		// Verify here
 
 		int tmp1 = strcmp(key, user_tmp.username);
-		int tmp2 = searchWildCard(user_tmp.username, key, strlen(user_tmp.username), strlen(key));
+		int tmp2 = compare(key, user_tmp.username); // Uses WILDCARDS
 
-		printf("%d %d\n", tmp1, tmp2);
+		//printf("%d %d\n", tmp1, tmp2);
 
 		if(tmp1 == 0 || tmp2 == 1){
 			//Print here
@@ -873,3 +874,35 @@ int searchWildCard(char text[], char key[], int n, int m){
 
 	return dp[n][m];
 }
+
+
+int searchWildCard_v2(char *first, char * second)
+{
+    // If we reach at the end of both strings, we are done
+    if (*first == '\0' && *second == '\0')
+        return 1;
+  
+    // Make sure that the characters after '*' are present
+    // in second string. This function assumes that the first
+    // string will not contain two consecutive '*'
+    if (*first == '*' && *(first+1) != '\0' && *second == '\0')
+        return 0;
+  
+    // If the first string contains '?', or current characters
+    // of both strings match
+    if (*first == '?' || *first == *second)
+        return searchWildCard_v2(first+1, second+1);
+  
+    // If there is *, then there are two possibilities
+    // a) We consider current character of second string
+    // b) We ignore current character of second string.
+    if (*first == '*')
+        return searchWildCard_v2(first+1, second) || searchWildCard_v2(first, second+1);
+        
+    return 0;
+}
+  
+// A function to run test cases
+int compare(char *first, char *second)
+{  searchWildCard_v2(first, second)? 1: 0; }
+  
