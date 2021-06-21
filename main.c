@@ -162,7 +162,6 @@ void pressAnyKey(void);
 int searchWildCard(char text[], char key[], int n, int m);
 int searchWildCard_v2(char * frist, char * second);
 
-
 // Program start running here.
 int main() {
 	login();
@@ -267,7 +266,6 @@ void mainMenu(){
         break;
     }
 }
-
 
 void errorMessage(void){
 	printf("\t\tFalha!\n");
@@ -775,7 +773,6 @@ int ExistsWorker(char p[]){
 	return flag;
 }
 
-
 int ExistsCompany(char p[]){
 	int flag = 0;
 
@@ -827,8 +824,6 @@ int ExistsCompanyById(int p){
 
 	return flag;
 }
-
-
 
 int ExistsComponentById(int id){
 	int flag = 0;
@@ -1377,7 +1372,6 @@ void SubstituteByWorkOffice(){
 int ExistsComponent(char p[]){
 	return 0;
 }
-
 
 // == WorkOffice functions == //
 void InsertWorkOffice(void){
@@ -2421,7 +2415,6 @@ int searchWildCard(char text[], char key[], int n, int m){
 
 	return dp[n][m];
 }
-
 
 int searchWildCard_v2(char *first, char * second)
 {
