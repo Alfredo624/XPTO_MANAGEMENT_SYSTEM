@@ -1010,7 +1010,7 @@ void UpdateComponents(void){
 	
 	printf("\n\t\t:: ATUALIZACAO DE COMPONENTE :::\n");
 	printf("\n\t\tId do Componente: ");
-	scanf("%s", component_tmp.id); fflush(stdin);
+	scanf("%d", &component_tmp.id); fflush(stdin);
 
 	if(ExistsComponent(component_tmp.id) == 0){
 		
@@ -1022,8 +1022,8 @@ void UpdateComponents(void){
 		choice = toupper(choice);
 
 		if(choice == 'Y')
-			UpdateWorker();
-		else Worker();
+			UpdateComponents();
+		else Components();
 	}
 	else{	
 		strcpy(curr_dir, buff); 
@@ -1255,7 +1255,95 @@ void SearchComponents(void){
 }
 
 void SubstituteByWorkOffice(){
+	header();
+	footer();
+	
+	printf("\n\t\t:: SUBSTITUICAO DE COMPONENTES ENTRE POSTOS DE TRABALHO :::\n");
+	printf("\n\t\tId do Componente: ");
+	scanf("%d", &component_tmp.id); fflush(stdin);
 
+	if(ExistsComponent(component_tmp.id) == 0){
+		
+		printf("\n\n\t\tComponente inexistente!\n");
+		printf("\n\t\tTentar novamente ? Yes/No: ");
+		scanf("%c", &choice);
+		fflush(stdin);
+
+		choice = toupper(choice);
+
+		if(choice == 'Y')
+			SubstituteByWorkOffice();
+		else Components();
+	}
+	else{	
+		strcpy(curr_dir, buff); 
+		char path[MAX_BUF] = "/data/components.bin"; // Define directory.
+
+		strcat(curr_dir, path); // Make the mix.
+
+		if(fopen(curr_dir, "r") == NULL) // Verify if the file exists.
+			fopen(curr_dir, "w");
+		else
+			file = fopen(curr_dir, "r"); // Open the file.
+
+		struct components all_components[MAX_ITENS];
+		fread(&all_components, sizeof(struct components), MAX_ITENS, file);
+		
+		int cont = 0;
+		for ( i = 0; i<MAX_ITENS; i++){
+			if(all_components[i].id == component_tmp.id){
+							
+				printf("\t\tId do Posto de Trabalho Actual: %s\n", all_companies[i].id_work_office);
+
+				printf("\t\tId Novo Posto de Trabalho: ");
+				int id_new;
+				scanf("%d", &id_new); fflush(stdin);
+
+				if(ExistsComponent(id_new) == 0){
+		
+					printf("\n\n\t\tComponente inexistente!\n");
+					printf("\n\t\tTentar novamente ? Yes/No: ");
+					scanf("%c", &choice);
+					fflush(stdin);
+
+					choice = toupper(choice);
+
+					if(choice == 'Y')
+						SubstituteByWorkOffice();
+					else Components();
+				} else{
+					all_components[i].id_work_office = id_new;
+				}
+
+
+				break;
+			}
+
+			if(all_components[i].name[0] != '\0')
+				cont++;
+		}
+
+		fclose(file); // Close the file.
+
+		
+		strcpy(curr_dir, buff); 
+		strcpy(path, "/data/components.bin"); // Define directory.
+
+		strcat(curr_dir, path); // Make the mix.
+
+		if(fopen(curr_dir, "r") == NULL) // Verify if the file exists.
+			fopen(curr_dir, "w");
+		else
+			file = fopen(curr_dir, "w"); // Open the file.
+
+		fwrite(&all_components, sizeof(component_tmp), cont + 1, file);
+		printf("\n\t\tPosto de Trabalho substituido com sucesso!\n\n");
+		
+		fclose(file);
+	}
+
+	pressAnyKey();
+	Components();
 }
 
 // == WorkOffice functions == //
