@@ -20,11 +20,7 @@
 #define GetCurrentDir getcwd
 #endif
 
-#define MAX_EMPLOYEES 100
-#define MAX_COMPONENTS 100
-#define MAX_WORKS 100
-#define MAX_WORK_OFFICE 100
-#define MAX_OPERATIONS 100
+#define MAX_ITENS 100
 
 // Global variables come here
 char row[101];
@@ -78,23 +74,23 @@ struct operations{
 	int id_external_doc;
 	int id_work_office;
 	int id_component;
-	int id_office;
+	int id_company;
 	int type;
 	char date_out[20];
-	char date_int[20];
+	char date_in[20];
 	char date_prevision_in[20];
-	int id_worker;
+	int id_employee;
 	char date[20];
 	float money;
 	char observation[1000];
-} operations_tmp;
+} operation_tmp;
 
 // Company structure
 struct company{
 	int id;
-	char name[20];
-	char type[20];
-	char contact[30];
+	char name[30];
+	int type[20];
+	char contact[60];
 } company_tmp;
 
 // 					#Structures end here
@@ -590,11 +586,11 @@ void UpdateWorker(){
 		else
 			file = fopen(curr_dir, "r"); // Open the file.
 
-		struct employee all_employees[MAX_EMPLOYEES];
-		fread(&all_employees, sizeof(struct employee), MAX_EMPLOYEES, file);
+		struct employee all_employees[MAX_ITENS];
+		fread(&all_employees, sizeof(struct employee), MAX_ITENS, file);
 		
 		int cont = 0;
-		for ( i = 0; i<MAX_EMPLOYEES; i++){
+		for ( i = 0; i<MAX_ITENS; i++){
 			if(strcmp(all_employees[i].username, user_tmp.username) == 0){
 							
 				printf("\n\n\t\tNome: ");
@@ -713,11 +709,11 @@ void DeleteWorker(){
 		else
 			file = fopen(curr_dir, "r"); // Open the file.
 
-		struct employee all_employees[MAX_EMPLOYEES];
-		fread(&all_employees, sizeof(struct employee), MAX_EMPLOYEES, file);
+		struct employee all_employees[MAX_ITENS];
+		fread(&all_employees, sizeof(struct employee), MAX_ITENS, file);
 		
 		int cont = 0;
-		for ( i = 0; i<MAX_EMPLOYEES; i++){
+		for ( i = 0; i<MAX_ITENS; i++){
 			if(strcmp(all_employees[i].username, user_tmp.username) == 0){	
 				strcpy(all_employees[i].name, "");
 				strcpy(all_employees[i].username, "");
@@ -779,6 +775,33 @@ int ExistsWorker(char p[]){
 }
 
 
+int ExistsCompany(char p[]){
+	int flag = 0;
+
+	GetCurrentDir(buff, FILENAME_MAX);
+	strcpy(curr_dir, buff); 
+	char path[MAX_BUF] = "/data/company.bin"; // Define directory.
+
+	strcat(curr_dir, path); // Make the mix.
+
+	if(fopen(curr_dir, "r") == NULL) // Verify if the file exists.
+		fopen(curr_dir, "w");
+	else
+		file = fopen(curr_dir, "r"); // Open the file.
+
+	struct company company_tmp;
+	while(fread(&company_tmp, sizeof(company_tmp), 1, file) == 1){ // Search for credentials.
+	
+		if(strcmp(p, company_tmp.name) == 0)
+			flag = 1;
+	}
+
+	fclose(file); // Close the file.´
+
+	return flag;
+}
+
+
 int ExistsComponent(int id){
 	int flag = 0;
 
@@ -801,6 +824,32 @@ int ExistsComponent(int id){
 	}
 
 	fclose(file); // Close the file.´
+
+	return flag;
+}
+
+int ExistsOperation(int id){
+	int flag = 0;
+
+	GetCurrentDir(buff, FILENAME_MAX);
+	strcpy(curr_dir, buff); 
+	char path[MAX_BUF] = "/data/operations.bin"; // Define directory.
+
+	strcat(curr_dir, path); // Make the mix.
+
+	if(fopen(curr_dir, "r") == NULL) // Verify if the file exists.
+		fopen(curr_dir, "w");
+	else
+		file = fopen(curr_dir, "r"); // Open the file.
+
+	struct operation operation_tmp;
+	while(fread(&operation_tmp, sizeof(operation_tmp), 1, file) == 1){ // Search for credentials.
+	
+		if(id == operation_tmp.id)
+			flag = 1;
+	}
+
+	fclose(file); // Close the file.
 
 	return flag;
 }
@@ -886,27 +935,6 @@ void pressAnyKey(){
 	getch();
 }
 
-// Sub-menus items
-void Insert(){
-
-}
-
-void Update(){
-
-}
-
-void Delete(){
-
-}
-
-void List(){
-
-}
-
-void Search(){
-
-}
-
 // == Components functions == //
 void InsertComponents(void){
 
@@ -960,14 +988,14 @@ void InsertComponents(void){
 
 	if(file == NULL){
 		printf("Problemas na abertura do ficheiro.\n\n");
-		Components();
+		WorkOffice();
 	}
 
 	if(fwrite(&component_tmp, sizeof(component_tmp), 1, file))
-		printf("\n\t\tFuncionario inserido com sucesso!\n\n");
+		printf("\n\t\tComponente inserido com sucesso!\n\n");
 	else {
 		printf("Erro de insercao\n");
-		Components();
+		WorkOffice();
 	}
 
 	fclose(file);
@@ -1008,11 +1036,11 @@ void UpdateComponents(void){
 		else
 			file = fopen(curr_dir, "r"); // Open the file.
 
-		struct components all_components[MAX_COMPONENTS];
-		fread(&all_components, sizeof(struct components), MAX_EMPLOYEES, file);
+		struct components all_components[MAX_ITENS];
+		fread(&all_components, sizeof(struct components), MAX_ITENS, file);
 		
 		int cont = 0;
-		for ( i = 0; i<MAX_EMPLOYEES; i++){
+		for ( i = 0; i<MAX_ITENS; i++){
 			if(all_components[i].id == component_tmp.id){
 							
 				printf("\t\tNome: ");
@@ -1069,7 +1097,7 @@ void UpdateComponents(void){
 	}
 
 	pressAnyKey();
-	Worker();
+	Components();
 }
 
 void DeleteComponents(void){
@@ -1115,23 +1143,23 @@ void DeleteComponents(void){
 		else
 			file = fopen(curr_dir, "r"); // Open the file.
 
-		struct components all_components[MAX_EMPLOYEES];
-		fread(&all_components, sizeof(struct components), MAX_COMPONENTS, file);
+		struct components all_components[MAX_ITENS];
+		fread(&all_components, sizeof(struct components), MAX_ITENS, file);
 		
 		int cont = 0;
-		for ( i = 0; i<MAX_COMPONENTS; i++){
-			if(all_components[i].id = components_tmp.id){	
+		for ( i = 0; i<MAX_ITENS; i++){
+			if(all_components[i].id == component_tmp.id){	
 				strcpy(all_components[i].name, "");
 			}
 
-			if(all_employees[i].name[0] != '\0')
+			if(all_components[i].name[0] != '\0')
 				cont++;
 		}
 
 		fclose(file); // Close the file.
 
 		strcpy(curr_dir, buff); 
-		strcpy(path, "/data/employee.bin"); // Define directory.
+		strcpy(path, "/data/components.bin"); // Define directory.
 
 		strcat(curr_dir, path); // Make the mix.
 
@@ -1140,14 +1168,14 @@ void DeleteComponents(void){
 		else
 			file = fopen(curr_dir, "w"); // Open the file.
 
-		fwrite(&all_employees, sizeof(employee), cont + 1, file);
-		printf("\n\t\tFuncionario apagado com sucesso!\n\n");
+		fwrite(&all_components, sizeof(component_tmp), cont + 1, file);
+		printf("\n\t\tComponente apagado com sucesso!\n\n");
 		
 		fclose(file);
 	}
 
 	pressAnyKey();
-	Worker();
+	Components();
 }
 
 void ListComponents(void){
@@ -1186,7 +1214,44 @@ void ListComponents(void){
 }
 
 void SearchComponents(void){
+	header();
+	footer();
+	
+	printf("\n\t\t:: PESQUISA DE COMPONENTES :::\n");
+	printf("\n\t\tPesquisar: ");
+	char key[100];
+	scanf("%s", key); fflush(stdin);
+	
+	GetCurrentDir(buff, FILENAME_MAX);
+	strcpy(curr_dir, buff); 
+	char path[MAX_BUF] = "/data/components.bin"; // Define directory.
 
+	strcat(curr_dir, path); // Make the mix.
+
+	if(fopen(curr_dir, "r") == NULL) // Verify if the file exists.
+		fopen(curr_dir, "w");
+	else
+		file = fopen(curr_dir, "r"); // Open the file.
+
+	struct components component_tmp;
+	while(fread(&component_tmp, sizeof(component_tmp), 1, file) == 1){ // Search for credentials.
+		// Verify here
+
+		int tmp1 = strcmp(key, component_tmp.username);
+		int tmp2 = compare(key, component_tmp.username); // Uses WildCards
+
+		if(tmp1 == 0 || tmp2 == 1){
+			//Print here
+			printf("\n\t\tId: %d\n\t\tDesignacao: %s\n\t\tNumero de Serie: %s\n\t\tData de aquisicao: %s\n\t\tDias de Garantia: %d\n\t\tId do Fornecedor: %d\n\t\tId do Fabricador: %d\n\t\tTipo: %d\n\t\tCondicao: %d\n\t\tId do Posto de Trabalho: %d\n", 
+			component_tmp.id, component_tmp.name, component_tmp.serie_number, component_tmp.date_taken, component_tmp.guarantee, component_tmp.id_supplier, component_tmp.id_maker, component_tmp.type, component_tmp.status, component_tmp.id_work_office);
+		
+		}
+	}
+	fclose(file); // Close the file.
+
+	printf("\n");
+	pressAnyKey();
+	Components();
 }
 
 void SubstituteByWorkOffice(){
@@ -1195,65 +1260,912 @@ void SubstituteByWorkOffice(){
 
 // == WorkOffice functions == //
 void InsertWorkOffice(void){
+	header();
+	footer();
+	
+	printf("\n\t\t:: INSERCAO DE POSTO DE TRABALHO :::");
+	printf("\n\n\t\tNome do Posto de Trabalho: ");
+	gets(work_office_tmp.name); fflush(stdin);
 
+	while(ExistsWorkOffice(work_office_tmp.name) == 1){
+		printf("\n\t\tPosto de Trabalho ja existente!\n");
+		printf("\t\tNome do Posto de Trabalho: ");
+		scanf("%s", work_office_tmp.name); fflush(stdin);
+	}
+
+	printf("\n\t\tLocal: ");
+	gets(work_office_tmp.place); fflush(stdin);
+
+	printf("\n\t\tSecção: ");
+	gets(work_office_tmp.section); fflush(stdin);
+	
+	printf("\n\t\tNota: ");
+	gets(work_office_tmp.note); fflush(stdin);
+
+	printf("\n\t\tIdentificacao do Funcionario: ");
+	gets(work_office_tmp.id_employee); fflush(stdin);
+
+	GetCurrentDir(buff, FILENAME_MAX);
+	strcpy(curr_dir, buff); 
+	strcpy(path, "/data/work_office.bin"); // Define directory.
+	strcat(curr_dir, path); // Make the mix.
+	
+	if(fopen(curr_dir, "r") == NULL) // Verify if the file exists.
+		fopen(curr_dir, "a");
+	else
+		file = fopen(curr_dir, "a"); // Open the file.
+
+	if(file == NULL){
+		printf("Problemas na abertura do ficheiro.\n\n");
+		WorkOffice();
+	}
+
+	if(fwrite(&work_office_tmp, sizeof(work_office_tmp), 1, file))
+		printf("\n\t\tPosto de Trabalho inserido com sucesso!\n\n");
+	else {
+		printf("Erro de insercao\n");
+		Worker();
+	}
+
+	fclose(file);
+
+	pressAnyKey();
+	WorkOffice();
 }
 
 void UpdateWorkOffice(void){
+	header();
+	footer();
+	
+	printf("\n\t\t::: ATUALIZACAO DE POSTOS DE TRABALHO :::\n");
+	printf("\n\t\tNome do Posto de Trabalho: ");
+	scanf("%d", &work_office_tmp.name); fflush(stdin);
 
+	if(ExistsWorkOffice(work_office_tmp.name) == 0){
+		
+		printf("\n\n\t\tPosto de Trabalho inexistente!\n");
+		printf("\n\t\tTentar novamente ? Yes/No: ");
+		scanf("%c", &choice);
+		fflush(stdin);
+
+		choice = toupper(choice);
+
+		if(choice == 'Y')
+			UpdateWorkOffice();
+		else WorkOffice();
+	}
+	else{	
+		strcpy(curr_dir, buff); 
+		char path[MAX_BUF] = "/data/work_office.bin"; // Define directory.
+
+		strcat(curr_dir, path); // Make the mix.
+
+		if(fopen(curr_dir, "r") == NULL) // Verify if the file exists.
+			fopen(curr_dir, "w");
+		else
+			file = fopen(curr_dir, "r"); // Open the file.
+
+		struct work_office_tmp all_work_offices[MAX_ITENS];
+		fread(&all_work_offices, sizeof(struct work_office_tmp), MAX_ITENS, file);
+		
+		int cont = 0;
+		for ( i = 0; i<MAX_ITENS; i++){
+			if(all_work_offices[i].id == work_office_tmp.id){
+							
+				printf("\t\tNome: ");
+				gets(all_work_offices.name); fflush(stdin);
+
+				printf("\n\t\tLocal: ");
+				gets(all_work_offices.place); fflush(stdin);
+
+				printf("\n\t\tSecção: ");
+				gets(all_work_offices.section); fflush(stdin);
+
+				printf("\n\t\tNota: ");
+				gets(all_work_offices.note); fflush(stdin);
+
+
+				break;
+			}
+
+			if(all_work_offices[i].name[0] != '\0')
+				cont++;
+		}
+
+		fclose(file); // Close the file.
+
+		
+		strcpy(curr_dir, buff); 
+		strcpy(path, "/data/work_office.bin"); // Define directory.
+
+		strcat(curr_dir, path); // Make the mix.
+
+		if(fopen(curr_dir, "r") == NULL) // Verify if the file exists.
+			fopen(curr_dir, "w");
+		else
+			file = fopen(curr_dir, "w"); // Open the file.
+
+		fwrite(&all_work_offices, sizeof(work_office_tmp), cont + 1, file);
+		printf("\n\t\tDados actualizados com sucesso!\n\n");
+		
+		fclose(file);
+	}
+
+	pressAnyKey();
+	WorkOffice();
 }
 
 void DeleteWorkOffice(void){
+	
+	header();
+	footer();
+	
+	printf("\n\t\t:: DELECAO DE POSTO DE TRABALHO :::\n");
+	printf("\n\t\tId do Posto de Trabalho: ");
+	scanf("%d", &id_work_office.id); fflush(stdin);
 
+	if(ExistsComponent(id_work_office.id) == 0){
+		
+		printf("\n\n\t\tPosto de Trabalo inexistente!\n");
+		printf("\n\t\tTentar novamente ? Yes/No: ");
+		scanf("%c", &choice);
+		fflush(stdin);
+
+		choice = toupper(choice);
+
+		if(choice == 'Y')
+			DeleteComponents();
+		else Components();
+	}
+	else{	
+
+		printf("\n\t\tTem a certeza que realmente deseja deletar? Sim/Nao: ");
+		char option;
+		scanf("%c", &option);
+
+		option = toupper(option);
+
+		if(option == 'N')
+			Components();
+
+		strcpy(curr_dir, buff); 
+		char path[MAX_BUF] = "/data/work_office.bin"; // Define directory.
+
+		strcat(curr_dir, path); // Make the mix.
+
+		if(fopen(curr_dir, "r") == NULL) // Verify if the file exists.
+			fopen(curr_dir, "w");
+		else
+			file = fopen(curr_dir, "r"); // Open the file.
+
+		struct work_office all_work_offices[MAX_ITENS];
+		fread(&all_work_offices, sizeof(struct work_office), MAX_ITENS, file);
+		
+		int cont = 0;
+		for ( i = 0; i<MAX_ITENS; i++){
+			if(all_work_offices[i].id == work_office_tmp.id){	
+				strcpy(all_work_offices[i].name, "");
+			}
+
+			if(all_work_offices[i].name[0] != '\0')
+				cont++;
+		}
+
+		fclose(file); // Close the file.
+
+		strcpy(curr_dir, buff); 
+		strcpy(path, "/data/work_office.bin"); // Define directory.
+
+		strcat(curr_dir, path); // Make the mix.
+
+		if(fopen(curr_dir, "r") == NULL) // Verify if the file exists.
+			fopen(curr_dir, "w");
+		else
+			file = fopen(curr_dir, "w"); // Open the file.
+
+		fwrite(&all_work_offices, sizeof(work_office_tmp), cont + 1, file);
+		printf("\n\t\tPosto de Trabalho apagado com sucesso!\n\n");
+		
+		fclose(file);
+	}
+
+	pressAnyKey();
+	WorkOffice();
 }
 
 void ListWorkOffice(void){
+	
+	header();
+	footer();
+	
+	printf("\n\t\t:: LISTAGEM DE POSTOS DE TRABALHO :::\n");
 
+	GetCurrentDir(buff, FILENAME_MAX);
+	strcpy(curr_dir, buff); 
+	char path[MAX_BUF] = "/data/work_office.bin"; // Define directory.
+
+	strcat(curr_dir, path); // Make the mix.
+
+	if(fopen(curr_dir, "r") == NULL) // Verify if the file exists.
+		fopen(curr_dir, "w");
+	else
+		file = fopen(curr_dir, "r"); // Open the file.
+
+	int count = 1;
+	while(fread(&work_office_tmp, sizeof(work_office_tmp), 1, file) == 1){ // Search for credentials.
+		if(work_office_tmp.name[0] == '\0')
+			continue;
+		
+		printf("\n\t\tId: %d\n\t\tNome: %s\n\t\tLugar: %s\n\t\tSecção: %s\n\t\tNota: %d\n\t\tId do Funcionario: %d\n", 
+			work_office_tmp.id, work_office_tmp.name, work_office_tmp.place, work_office_tmp.section, work_office_tmp.note, work_office_tmp.id_employee);
+		count++;
+	}
+
+	fclose(file); // Close the file.
+
+	printf("\n\n\t\tTOTAL =  %d\n\n", count - 1);
+	pressAnyKey();
+	WorkOffice();
 }
 
 void SearchWorkOffice(void){
+	header();
+	footer();
+	
+	printf("\n\t\t:: PESQUISA DE POSTO DE TRABALHO :::\n");
+	printf("\n\t\tPesquisar: ");
+	char key[100];
+	scanf("%s", key); fflush(stdin);
+	
+	GetCurrentDir(buff, FILENAME_MAX);
+	strcpy(curr_dir, buff); 
+	char path[MAX_BUF] = "/data/work_office.bin"; // Define directory.
 
+	strcat(curr_dir, path); // Make the mix.
+
+	if(fopen(curr_dir, "r") == NULL) // Verify if the file exists.
+		fopen(curr_dir, "w");
+	else
+		file = fopen(curr_dir, "r"); // Open the file.
+
+	struct work_office work_office_tmp;
+	while(fread(&work_office_tmp, sizeof(work_office_tmp), 1, file) == 1){ // Search for credentials.
+		// Verify here
+
+		int tmp1 = strcmp(key, work_office_tmp.name);
+		int tmp2 = compare(key, work_office_tmp.name); // Uses WildCards
+
+		if(tmp1 == 0 || tmp2 == 1){
+			//Print here
+		
+			printf("\n\t\tId: %d\n\t\tNome: %s\n\t\tLugar: %s\n\t\tSecção: %s\n\t\tNota: %d\n\t\tId do Funcionario: %d\n", 
+				work_office_tmp.id, work_office_tmp.name, work_office_tmp.place, work_office_tmp.section, work_office_tmp.note, work_office_tmp.id_employee);
+		
+		}
+	}
+	fclose(file); // Close the file.
+
+	printf("\n");
+	pressAnyKey();
+	WorkOffice();
 }
 
 // Operations functions
 void InsertOperations(void){
 
+	header();
+	footer();
+
+	GetCurrentDir(buff, FILENAME_MAX);
+	strcpy(curr_dir, buff); 
+	char path[MAX_BUF] = "/data/operations.bin"; // Define directory.
+	
+	printf("\n\t\t:: INSERCAO DE OPERACOES :::");
+	printf("\n\n\t\tID: ");
+	scanf("%d", &operation_tmp.id); fflush(stdin);
+
+	printf("\n\n\t\tId do Documento Interno: ");
+	scanf("%d", &operation_tmp.id_internal_doc); fflush(stdin);
+
+	printf("\n\n\t\tId do Documento Externo: ");
+	scanf("%d", &operation_tmp.id_external_doc); fflush(stdin);
+
+	printf("\n\n\t\tId do Componente: ");
+	scanf("%d", &operation_tmp.id_component); fflush(stdin);
+
+	printf("\n\n\t\tId da Empresa: ");
+	scanf("%d", &operation_tmp.id_company); fflush(stdin);
+
+	printf("\n\n\t\tTipo: ");
+	scanf("%s", operation_tmp.type); fflush(stdin);
+	
+	printf("\n\n\t\tData de Entrada: ");
+	scanf("%d", &operation_tmp.date_in); fflush(stdin);
+
+	printf("\n\n\t\tData de Saída: ");
+	scanf("%d", &operation_tmp.date_out); fflush(stdin);
+
+	printf("\n\n\t\tData de Previsão de Entrada: ");
+	scanf("%d", &operation_tmp.date_prevision_in); fflush(stdin);
+	
+	printf("\n\n\t\tId do Funcionario: ");
+	scanf("%d", &operation_tmp.id_employee); fflush(stdin);
+
+	printf("\n\n\t\tData: ");
+	scanf("%s", operation_tmp.date); fflush(stdin);
+
+	printf("\n\n\t\tMontante: ");
+	scanf("%f", &operation_tmp.money); fflush(stdin);
+	
+	printf("\n\n\t\tObservacoes: ");
+	gets(operation_tmp.observation); fflush(stdin);
+
+	GetCurrentDir(buff, FILENAME_MAX);
+	strcpy(curr_dir, buff); 
+	strcpy(path, "/data/operations.bin"); // Define directory.
+	strcat(curr_dir, path); // Make the mix.
+	
+	if(fopen(curr_dir, "r") == NULL) // Verify if the file exists.
+		fopen(curr_dir, "a");
+	else
+		file = fopen(curr_dir, "a"); // Open the file.
+
+	if(file == NULL){
+		printf("Problemas na abertura do ficheiro.\n\n");
+		WorkOffice();
+	}
+
+	if(fwrite(&component_tmp, sizeof(component_tmp), 1, file))
+		printf("\n\t\tOperacao inserida com sucesso!\n\n");
+	else {
+		printf("Erro de insercao\n");
+		Operations();
+	}
+
+	fclose(file);
+
+	pressAnyKey();
+	Operations();
 }
 
 void UpdateOperations(void){
+	header();
+	footer();
+	
+	printf("\n\t\t::: ATUALIZACAO DE OPERACOES :::\n");
+	printf("\n\t\tId da Operacao: ");
+	scanf("%d", &operation_tmp.id); fflush(stdin);
 
+	if(ExistsOperation(operation_tmp.id) == 0){
+		
+		printf("\n\n\t\tOperacao inexistente!\n");
+		printf("\n\t\tTentar novamente ? Yes/No: ");
+		scanf("%c", &choice);
+		fflush(stdin);
+
+		choice = toupper(choice);
+
+		if(choice == 'Y')
+			UpdateOperations();
+		else Operations();
+	}
+	else{	
+		strcpy(curr_dir, buff); 
+		char path[MAX_BUF] = "/data/operations.bin"; // Define directory.
+
+		strcat(curr_dir, path); // Make the mix.
+
+		if(fopen(curr_dir, "r") == NULL) // Verify if the file exists.
+			fopen(curr_dir, "w");
+		else
+			file = fopen(curr_dir, "r"); // Open the file.
+
+		struct operation all_operations[MAX_ITENS];
+		fread(&all_operations, sizeof(struct operation), MAX_ITENS, file);
+		
+		int cont = 0;
+		for ( i = 0; i<MAX_ITENS; i++){
+			if(all_operations[i].id == operation_tmp.id){
+							
+				printf("\n\n\t\tId do Documento Interno: ");
+				scanf("%d", &all_operations.id_internal_doc); fflush(stdin);
+
+				printf("\n\n\t\tId do Documento Externo: ");
+				scanf("%d", &all_operations.id_external_doc); fflush(stdin);
+
+				printf("\n\n\t\tId do Componente: ");
+				scanf("%d", &all_operations.id_component); fflush(stdin);
+
+				printf("\n\n\t\tId da Empresa: ");
+				scanf("%d", &all_operations.id_company); fflush(stdin);
+
+				printf("\n\n\t\tTipo: ");
+				scanf("%s", all_operations.type); fflush(stdin);
+
+				printf("\n\n\t\tData de Entrada: ");
+				scanf("%d", &all_operations.date_in); fflush(stdin);
+
+				printf("\n\n\t\tData de Saída: ");
+				scanf("%d", &all_operations.date_out); fflush(stdin);
+
+				printf("\n\n\t\tData de Previsão de Entrada: ");
+				scanf("%d", &all_operations.date_prevision_in); fflush(stdin);
+
+				printf("\n\n\t\tId do Funcionario: ");
+				scanf("%d", &operation_tmp.id_employee); fflush(stdin);
+
+				printf("\n\n\t\tData: ");
+				scanf("%s", all_operations.date); fflush(stdin);
+
+				printf("\n\n\t\tMontante: ");
+				scanf("%f", &all_operations.money); fflush(stdin);
+
+				printf("\n\n\t\tObservacoes: ");
+				gets(all_operations.observation); fflush(stdin);
+				break;
+			}
+
+			if(all_operations[i].name[0] != '\0')
+				cont++;
+		}
+
+		fclose(file); // Close the file.
+
+		
+		strcpy(curr_dir, buff); 
+		strcpy(path, "/data/operations.bin"); // Define directory.
+
+		strcat(curr_dir, path); // Make the mix.
+
+		if(fopen(curr_dir, "r") == NULL) // Verify if the file exists.
+			fopen(curr_dir, "w");
+		else
+			file = fopen(curr_dir, "w"); // Open the file.
+
+		fwrite(&all_operations, sizeof(operation_tmp), cont + 1, file);
+		printf("\n\t\tDados actualizados com sucesso!\n\n");
+		
+		fclose(file);
+	}
+
+	pressAnyKey();
+	Operations();
 }
 
 void DeleteOperations(void){
+	header();
+	footer();
+	
+	printf("\n\t\t:: DELECAO DE OPERACOES :::\n");
+	printf("\n\t\tId da Operacao: ");
+	scanf("%d", &operation_tmp.id); fflush(stdin);
 
+	if(ExistsOperation(operation.id) == 0){
+		
+		printf("\n\n\t\tOperacao inexistente!\n");
+		printf("\n\t\tTentar novamente ? Yes/No: ");
+		scanf("%c", &choice);
+		fflush(stdin);
+
+		choice = toupper(choice);
+
+		if(choice == 'Y')
+			DeleteOperations();
+		else Operations();
+	}
+	else{	
+
+		printf("\n\t\tTem a certeza que realmente deseja deletar? Sim/Nao: ");
+		char option;
+		scanf("%c", &option);
+
+		option = toupper(option);
+
+		if(option == 'N')
+			Components();
+
+		strcpy(curr_dir, buff); 
+		char path[MAX_BUF] = "/data/operations.bin"; // Define directory.
+
+		strcat(curr_dir, path); // Make the mix.
+
+		if(fopen(curr_dir, "r") == NULL) // Verify if the file exists.
+			fopen(curr_dir, "w");
+		else
+			file = fopen(curr_dir, "r"); // Open the file.
+
+		struct operation all_operations[MAX_ITENS];
+		fread(&all_operations, sizeof(struct operation), MAX_ITENS, file);
+		
+		int cont = 0;
+		for ( i = 0; i<MAX_ITENS; i++){
+			if(all_operations[i].id == operation_tmp.id){	
+				strcpy(all_operations[i].id_external_doc, "");
+				strcpy(all_operations[i].id_internal_doc, "");
+				strcpy(all_operations[i].id_company, "");
+				strcpy(all_operations[i].id_employee, "");
+			}
+
+			if(all_operations[i].id_company[0] != '\0')
+				cont++;
+		}
+
+		fclose(file); // Close the file.
+
+		strcpy(curr_dir, buff); 
+		strcpy(path, "/data/operation.bin"); // Define directory.
+
+		strcat(curr_dir, path); // Make the mix.
+
+		if(fopen(curr_dir, "r") == NULL) // Verify if the file exists.
+			fopen(curr_dir, "w");
+		else
+			file = fopen(curr_dir, "w"); // Open the file.
+
+		fwrite(&all_operations, sizeof(operation_tmp), cont + 1, file);
+		printf("\n\t\tOperacao apagado com sucesso!\n\n");
+		
+		fclose(file);
+	}
+
+	pressAnyKey();
+	Operations();
 }
 
 void ListOperations(void){
+	header();
+	footer();
+	
+	printf("\n\t\t:: LISTAGEM DE OPERACOES :::\n");
 
+	GetCurrentDir(buff, FILENAME_MAX);
+	strcpy(curr_dir, buff); 
+	char path[MAX_BUF] = "/data/operations.bin"; // Define directory.
+
+	strcat(curr_dir, path); // Make the mix.
+
+	if(fopen(curr_dir, "r") == NULL) // Verify if the file exists.
+		fopen(curr_dir, "w");
+	else
+		file = fopen(curr_dir, "r"); // Open the file.
+
+	int count = 1;
+	while(fread(&operation_tmp, sizeof(operation_tmp), 1, file) == 1){ // Search for credentials.
+		if(operation_tmp.name[0] == '\0')
+			continue;
+		
+		printf("\n\t\tId: %d\n\t\tId do Documento Interno: %d\n\t\tId do Documento Externo: %s\n\t\tId do Posto de Trabalho: %s\n\t\tId do Componente: %d\n\t\tId da Empresa: %d\n\t\tTipo de Operacao: %d\n\t\tData de Saida: %d\n\t\tData de Chegada: %d\n\t\tData Prevista de Chegada: %d\n\t\tId do Funcionario Responsavel: %d\n\t\tData da Operacao: %d\n\t\tMontante: %d\n\t\tObservacoes: %d\n", 
+			operation_tmp.id, operation_tmp.id_internal_doc, operation_tmp.id_external_doc, operation_tmp.id_work_office, operation_tmp.id_component, operation_tmp.company);
+		count++;
+	}
+
+	fclose(file); // Close the file.
+
+	printf("\n\n\t\tTOTAL =  %d\n\n", count - 1);
+	pressAnyKey();
+	Operations();
 }
 
 void SearchOperations(void){
+	header();
+	footer();
+	
+	printf("\n\t\t:: PESQUISA DE OPERACOES :::\n");
+	printf("\n\t\tPesquisar: ");
+	char key[100];
+	scanf("%s", key); fflush(stdin);
+	
+	GetCurrentDir(buff, FILENAME_MAX);
+	strcpy(curr_dir, buff); 
+	char path[MAX_BUF] = "/data/operations.bin"; // Define directory.
 
+	strcat(curr_dir, path); // Make the mix.
+
+	if(fopen(curr_dir, "r") == NULL) // Verify if the file exists.
+		fopen(curr_dir, "w");
+	else
+		file = fopen(curr_dir, "r"); // Open the file.
+
+	struct operations operation_tmp;
+	while(fread(&operation_tmp, sizeof(operation_tmp), 1, file) == 1){ // Search for credentials.
+		// Verify here
+
+		int tmp1 = strcmp(key, operation_tmp.type);
+		int tmp2 = compare(key, operation_tmp.type); // Uses WildCards
+
+		if(tmp1 == 0 || tmp2 == 1){
+			//Print here
+			printf("\n\t\tId: %d\n\t\tId do Documento Interno: %d\n\t\tId do Documento Externo: %s\n\t\tId do Posto de Trabalho: %s\n\t\tId do Componente: %d\n\t\tId da Empresa: %d\n\t\tTipo de Operacao: %d\n\t\tData de Saida: %d\n\t\tData de Chegada: %d\n\t\tData Prevista de Chegada: %d\n\t\tId do Funcionario Responsavel: %d\n\t\tData da Operacao: %d\n\t\tMontante: %d\n\t\tObservacoes: %d\n", 
+				operation_tmp.id, operation_tmp.id_internal_doc, operation_tmp.id_external_doc, operation_tmp.id_work_office, operation_tmp.id_component, operation_tmp.company);
+		
+		}
+	}
+	fclose(file); // Close the file.
+
+	printf("\n");
+	pressAnyKey();
+	WorkOffice();
 }
 
 // == Company functions == //
 void InsertCompany(void){
+	
+	header();
+	footer();
+	
+	printf("\n\t\t::: INSERCAO DE EMPRESA :::");
+	printf("\n\n\t\tNome: ");
+	gets(company_tmp.name); fflush(stdin);
 
+	while(ExistsCompany(company_tmp.name) == 1){
+		printf("\n\t\tEmpresa ja existente!\n");
+		printf("\t\tNome da Empresa: ");
+		scanf("%s", company_tmp.name); fflush(stdin);
+	}
+
+	printf("\t\tTipo: ");
+	scanf("%s", company_tmp.type); fflush(stdin);
+
+	printf("\t\tContacto: ");
+	scanf("%s", component_tmp.contact); fflush(stdin);
+
+	GetCurrentDir(buff, FILENAME_MAX);
+	strcpy(curr_dir, buff); 
+	strcpy(path, "/data/company.bin"); // Define directory.
+	strcat(curr_dir, path); // Make the mix.
+	
+	if(fopen(curr_dir, "r") == NULL) // Verify if the file exists.
+		fopen(curr_dir, "a");
+	else
+		file = fopen(curr_dir, "a"); // Open the file.
+
+	if(file == NULL){
+		printf("Problemas na abertura do ficheiro.\n\n");
+		Worker();
+	}
+
+	if(fwrite(&user_tmp, sizeof(user_tmp), 1, file))
+		printf("\n\t\tEmpresa inserida com sucesso!\n\n");
+	else {
+		printf("Erro de insercao\n");
+		Worker();
+	}
+
+	fclose(file);
+
+	pressAnyKey();
+	Company();
 }
 
 void UpdateCompany(void){
+	header();
+	footer();
+	
+	printf("\n\t\t:: ATUALIZACAO DE EMPRESA :::\n");
+	printf("\n\t\tNome da Empresa: ");
+	scanf("%d", &company_tmp.name); fflush(stdin);
 
+	if(ExistsCompany(company_tmp.name) == 0){
+		
+		printf("\n\n\t\tEmpresa inexistente!\n");
+		printf("\n\t\tTentar novamente ? Yes/No: ");
+		scanf("%c", &choice);
+		fflush(stdin);
+
+		choice = toupper(choice);
+
+		if(choice == 'Y')
+			UpdateCompany();
+		else Company();
+	}
+	else{	
+		strcpy(curr_dir, buff); 
+		char path[MAX_BUF] = "/data/company.bin"; // Define directory.
+
+		strcat(curr_dir, path); // Make the mix.
+
+		if(fopen(curr_dir, "r") == NULL) // Verify if the file exists.
+			fopen(curr_dir, "w");
+		else
+			file = fopen(curr_dir, "r"); // Open the file.
+
+		struct company all_companies[MAX_ITENS];
+		fread(&all_companies, sizeof(struct company_tmp), MAX_ITENS, file);
+		
+		int cont = 0;
+		for ( i = 0; i<MAX_ITENS; i++){
+			if(all_companies[i].id == company_tmp.id){
+							
+				printf("\t\tNome: ");
+				gets(company_tmp.name); fflush(stdin);
+
+				printf("\t\tTipo: ");
+				scanf("%s", company_tmp.type); fflush(stdin);
+
+				printf("\t\tContacto: ");
+				scanf("%s", company_tmp.contact); fflush(stdin);
+
+				break;
+			}
+
+			if(all_companies[i].name[0] != '\0')
+				cont++;
+		}
+
+		fclose(file); // Close the file.
+
+		
+		strcpy(curr_dir, buff); 
+		strcpy(path, "/data/company.bin"); // Define directory.
+
+		strcat(curr_dir, path); // Make the mix.
+
+		if(fopen(curr_dir, "r") == NULL) // Verify if the file exists.
+			fopen(curr_dir, "w");
+		else
+			file = fopen(curr_dir, "w"); // Open the file.
+
+		fwrite(&all_companies, sizeof(company_tmp), cont + 1, file);
+		printf("\n\t\tDados actualizados com sucesso!\n\n");
+		
+		fclose(file);
+	}
+
+	pressAnyKey();
+	Components();
 }
 
 void DeleteCompany(void){
+	header();
+	footer();
+	
+	printf("\n\t\t:: DELECAO DE EMPRESA :::\n");
+	printf("\n\t\tId da Empresa: ");
+	scanf("%d", &company_tmp.id); fflush(stdin);
 
+	if(ExistsCompany(company_tmp.id) == 0){
+		
+		printf("\n\n\t\tEmpresa inexistente!\n");
+		printf("\n\t\tTentar novamente ? Yes/No: ");
+		scanf("%c", &choice);
+		fflush(stdin);
+
+		choice = toupper(choice);
+
+		if(choice == 'Y')
+			DeleteCompany();
+		else Company();
+	}
+	else{	
+
+		printf("\n\t\tTem a certeza que realmente deseja deletar? Sim/Nao: ");
+		char option;
+		scanf("%c", &option);
+
+		option = toupper(option);
+
+		if(option == 'N')
+			Company();
+
+		strcpy(curr_dir, buff); 
+		char path[MAX_BUF] = "/data/components.bin"; // Define directory.
+
+		strcat(curr_dir, path); // Make the mix.
+
+		if(fopen(curr_dir, "r") == NULL) // Verify if the file exists.
+			fopen(curr_dir, "w");
+		else
+			file = fopen(curr_dir, "r"); // Open the file.
+
+		struct company all_companies[MAX_ITENS];
+		fread(&all_companies, sizeof(struct company), MAX_ITENS, file);
+		
+		int cont = 0;
+		for ( i = 0; i<MAX_ITENS; i++){
+			if(all_companies[i].id == company.id){	
+				strcpy(all_companies[i].name, "");
+			}
+
+			if(all_companies[i].name[0] != '\0')
+				cont++;
+		}
+
+		fclose(file); // Close the file.
+
+		strcpy(curr_dir, buff); 
+		strcpy(path, "/data/company.bin"); // Define directory.
+
+		strcat(curr_dir, path); // Make the mix.
+
+		if(fopen(curr_dir, "r") == NULL) // Verify if the file exists.
+			fopen(curr_dir, "w");
+		else
+			file = fopen(curr_dir, "w"); // Open the file.
+
+		fwrite(&all_companies, sizeof(company_tmp), cont + 1, file);
+		printf("\n\t\tEmpresa apagado com sucesso!\n\n");
+		
+		fclose(file);
+	}
+
+	pressAnyKey();
+	Worker();
 }
 
 void ListCompany(void){
+	
+	header();
+	footer();
+	
+	printf("\n\t\t:: LISTAGEM DE EMPRESA :::\n");
 
+	GetCurrentDir(buff, FILENAME_MAX);
+	strcpy(curr_dir, buff); 
+	char path[MAX_BUF] = "/data/company.bin"; // Define directory.
+
+	strcat(curr_dir, path); // Make the mix.
+
+	if(fopen(curr_dir, "r") == NULL) // Verify if the file exists.
+		fopen(curr_dir, "w");
+	else
+		file = fopen(curr_dir, "r"); // Open the file.
+
+	int count = 1;
+	while(fread(&company_tmp, sizeof(company_tmp), 1, file) == 1){ // Search for credentials.
+		if(company_tmp.name[0] == '\0')
+			continue;
+		
+		printf("\n\t\tId: %d\n\t\tNome: %s\n\t\tTipo: %s\n\t\tContacto: %s\n", 
+			company_tmp.id, company_tmp.name, company_tmp.type, component_tmp.contact);
+		count++;
+	}
+
+	fclose(file); // Close the file.
+
+	printf("\n\n\t\tTOTAL =  %d\n\n", count - 1);
+	pressAnyKey();
+	Company();
 }
 
 void SearchCompany(void){
+	
+	header();
+	footer();
+	
+	printf("\n\t\t:: PESQUISA DE EMPRESAS :::\n");
+	printf("\n\t\tPesquisar: ");
+	char key[100];
+	scanf("%s", key); fflush(stdin);
+	
+	GetCurrentDir(buff, FILENAME_MAX);
+	strcpy(curr_dir, buff); 
+	char path[MAX_BUF] = "/data/company.bin"; // Define directory.
 
+	strcat(curr_dir, path); // Make the mix.
+
+	if(fopen(curr_dir, "r") == NULL) // Verify if the file exists.
+		fopen(curr_dir, "w");
+	else
+		file = fopen(curr_dir, "r"); // Open the file.
+
+	struct company company_tmp;
+	while(fread(&company_tmp, sizeof(company_tmp), 1, file) == 1){ // Search for credentials.
+		// Verify here
+
+		int tmp1 = strcmp(key, company_tmp.name);
+		int tmp2 = compare(key, company_tmp.name); // Uses WildCards
+
+		if(tmp1 == 0 || tmp2 == 1){
+			//Print here
+			printf("\n\t\tId: %d\n\t\tNome: %s\n\t\tTipo: %s\n\t\tContacto: %s\n", 
+				company_tmp.id, company_tmp.name, company_tmp.type, component_tmp.contact);
+		}
+	}
+	fclose(file); // Close the file.
+
+	printf("\n");
+	pressAnyKey();
+	WorkOffice();
 }
 
 int searchWildCard(char text[], char key[], int n, int m){
