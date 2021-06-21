@@ -21,6 +21,10 @@
 #endif
 
 #define MAX_EMPLOYEES 100
+#define MAX_COMPONENTS 100
+#define MAX_WORKS 100
+#define MAX_WORK_OFFICE 100
+#define MAX_OPERATIONS 100
 
 // Global variables come here
 char row[101];
@@ -55,7 +59,7 @@ struct components{
 	int status;
 	int id_work_office;
 	char observation[1000];
-};
+} component_tmp;
 
 //Work Office structure
 struct work_office{
@@ -65,7 +69,7 @@ struct work_office{
 	int section;
 	char note[50];
 	int id_employee;
-};
+} work_office_tmp;
 
 //Operation structure
 struct operations{
@@ -83,7 +87,7 @@ struct operations{
 	char date[20];
 	float money;
 	char observation[1000];
-};
+} operations_tmp;
 
 // Company structure
 struct company{
@@ -91,7 +95,7 @@ struct company{
 	char name[20];
 	char type[20];
 	char contact[30];
-};
+} company_tmp;
 
 // 					#Structures end here
 
@@ -117,8 +121,36 @@ void ListWorker(void);
 void SearchWorker(void);
 int ExistsWorker(char p[]);
 
+//WorkOffice CRUD
+void InsertWorkOffice(void);
+void UpdateWorkOffice(void);
+void DeleteWorkOffice(void);
+void ListWorkOffice(void);
+void SearchWorkOffice(void);
 
-// Functions definitions
+//Component CRUD
+void InsertComponents(void);
+void UpdateComponents(void);
+void DeleteComponents(void);
+void ListComponents(void);
+void SearchComponents(void);
+void SubstituteByWorkOffice(void);
+
+//Operation CRUD
+void InsertOperations(void);
+void UpdateOperations(void);
+void DeleteOperations(void);
+void ListOperations(void);
+void SearchOperations(void);
+
+//Company CRUD
+void InsertCompany(void);
+void UpdateCompany(void);
+void DeleteCompany(void);
+void ListCompany(void);
+void SearchCompany(void);
+
+// Function definitions
 void login(void);
 void menu(void);
 void errorMessage(void);
@@ -215,7 +247,7 @@ void mainMenu(){
 	header();
 	footer();
     printf("\n\t\t::: MENU PRINCIPAL :::");
-    printf("\n\n\t\t[1] => Componentes:\n\t\t[2] => Posto de trabalho:\n\t\t[3] => Funcionarios:\n\t\t[4] => Operacoes:\n\t\t[5] => Empresas:\n\t\t[6] => Voltar <=::\n\t\t[7] => Sai.\n\n\t\tOperacoes: ");
+    printf("\n\n\t\t[1] => Componentes:\n\t\t[2] => Posto de trabalho:\n\t\t[3] => Funcionarios:\n\t\t[4] => Operacoes:\n\t\t[5] => Empresas:\n\t\t[6] => Voltar <=::\n\t\t[7] => Sair.\n\n\t\tOperacoes: ");
     scanf("%c", &choice); fflush(stdin);
 
     switch(choice)
@@ -297,22 +329,29 @@ void successful(){
 
 void Components(){
 	header();
+	footer();
     printf("\n\t\t::: MENU COMPONENTES :::");
-    printf("\n\n\t\t[1] => Inserir:\n\t\t[2] => Alterar:\n\t\t[3] => Apagar:\n\t\t[4] => Listar:\n\t\t[5] => Pesquisar:\n\t\t[6] => Sair.\n\n\t\tOperacao: ");
+    printf("\n\n\t\t[1] => Inserir:\n\t\t[2] => Alterar:\n\t\t[3] => Apagar:\n\t\t[4] => Substituir entre postos de trabalho:\n\t\t[5] => Listar:\n\t\t[6] => Pesquisar:\n\t\t[7] => Voltar <=::\n\t\t[8] => Sair.\n\n\t\tOperacao: ");
+
+	scanf("%c", &choice); fflush(stdin);
 	
     switch(choice)
     {
-        case '1': Insert();
+        case '1': InsertComponents();
         break;
-        case '2': Update();
+        case '2': UpdateComponents();
         break;
-        case '3': Delete();
+        case '3': DeleteComponents();
         break;
-        case '4': List();
+        case '4': SubstituteByWorkOffice();
         break;
-        case '5': Search();
+        case '5': ListComponents();
         break;
-        case '6': Exit();
+        case '6': SearchComponents();
+        break;
+        case '7': mainMenu();
+        break;
+        case '8': Exit();
         break;
         default: Components();
         break;
@@ -321,22 +360,27 @@ void Components(){
 
 void WorkOffice(){
 	header();
+	footer();
     printf("\n\t\t::: MENU POSTOS DE TRABALHOS :::");
-    printf("\n\n\t\t[1] => Inserir:\n\t\t[2] => Alterar:\n\t\t[3] => Apagar:\n\t\t[4] => Listar:\n\t\t[5] => Pesquisar:\n\t\t[6] => Sair.\n\n\t\tOperacoes: ");
+    printf("\n\n\t\t[1] => Inserir:\n\t\t[2] => Alterar:\n\t\t[3] => Apagar:\n\t\t[4] => Listar:\n\t\t[5] => Pesquisar:\n\t\t[6] => Voltar <=::\n\t\t[7] => Sair.\n\n\t\tOperacoes: ");
 	
+	scanf("%c", &choice); fflush(stdin);
+
     switch(choice)
     {
-        case '1': Insert();
+        case '1': InsertWorkOffice();
         break;
-        case '2': Update();
+        case '2': UpdateWorkOffice();
         break;
-        case '3': Delete();
+        case '3': DeleteWorkOffice();
         break;
-        case '4': List();
+        case '4': ListWorkOffice();
         break;
-        case '5': Search();
+        case '5': SearchWorkOffice();
         break;
-        case '6': Exit();
+        case '6': mainMenu();
+        break;
+        case '7': Exit();
         break;
         default: WorkOffice();
         break;
@@ -347,7 +391,7 @@ void Worker(){
 	header();
 	footer();
     printf("\n\t\t::: MENU FUNCIONARIOS :::");
-	printf("\n\n\t\t[1] => Inserir:\n\t\t[2] => Alterar:\n\t\t[3] => Apagar:\n\t\t[4] => Listar:\n\t\t[5] => Pesquisar:\n\t\t[6] => Voltar:\n\t\t[7] => Sair.\n\n\t\tOperacoes: ");
+	printf("\n\n\t\t[1] => Inserir:\n\t\t[2] => Alterar:\n\t\t[3] => Apagar:\n\t\t[4] => Listar:\n\t\t[5] => Pesquisar:\n\t\t[6] => Voltar <=::\n\t\t[7] => Sair.\n\n\t\tOperacoes: ");
 	
 	scanf("%c", &choice); fflush(stdin);
 
@@ -373,26 +417,28 @@ void Worker(){
 }
 
 void Operations(){
-	system("cls");
 	header();
+	footer();
     printf("\n\t\t:: MENU OPERACOES :::");
-	printf("\n\n\t\t[1] => Inserir:\n\t\t[2] => Alterar:\n\t\t[3] => Apagar:\n\t\t[4] => Listar:\n\t\t[5] => Pesquisar:\n\t\t[6] => Sair.\n\n\t\tOperacoes: ");
+	printf("\n\n\t\t[1] => Inserir:\n\t\t[2] => Alterar:\n\t\t[3] => Apagar:\n\t\t[4] => Listar:\n\t\t[5] => Pesquisar:\n\t\t[6] => Voltar <=::\n\t\t[7] => Sair.\n\n\t\tOperacoes: ");
 	scanf("%c", &choice); fflush(stdin);
 
 	
     switch(choice)
     {
-        case '1': Insert();
+        case '1': InsertOperations();
         break;
-        case '2': Update();
+        case '2': UpdateOperations();
         break;
-        case '3': Delete();
+        case '3': DeleteOperations();
         break;
-        case '4': List();
+        case '4': ListOperations();
         break;
-        case '5': Search();
+        case '5': SearchOperations();
         break;
-        case '6': exit(0);
+        case '6': mainMenu();
+        break;
+        case '7': Exit();
         break;
         default: Operations();
         break;
@@ -400,26 +446,28 @@ void Operations(){
 }
 
 void Company(){
-	system("cls");
 	header();
+	footer();
     printf("\n\t\t::: MENU EMPRESAS :::");    
-	printf("\n\n\t\t[1] => Inserir:\n\t\t[2] => Alterar:\n\t\t[3] => Apagar:\n\t\t[4] => Listar:\n\t\t[5] => Pesquisar:\n\t\t[6] => Sair:\n\n\t\tOperacoes: ");
+	printf("\n\n\t\t[1] => Inserir:\n\t\t[2] => Alterar:\n\t\t[3] => Apagar:\n\t\t[4] => Listar:\n\t\t[5] => Pesquisar:\n\t\t[6] => Voltar <=::\n\t\t[7] => Sair:\n\n\t\tOperacoes: ");
 
 	scanf("%c", &choice); fflush(stdin);
 
     switch(choice)
     {
-        case '1': Insert();
+        case '1': InsertCompany();
         break;
-        case '2': Update();
+        case '2': UpdateCompany();
         break;
-        case '3': Delete();
+        case '3': DeleteCompany();
         break;
-        case '4': List();
+        case '4': ListCompany();
         break;
-        case '5': Search();
+        case '5': SearchCompany();
         break;
-        case '6': exit(0);
+        case '6': mainMenu();
+        break;
+        case '7': Exit();
         break;
         default: Company();
         break;
@@ -641,7 +689,7 @@ void DeleteWorker(){
 		choice = toupper(choice);
 
 		if(choice == 'Y')
-			UpdateWorker();
+			DeleteWorker();
 		else Worker();
 	}
 	else{	
@@ -722,6 +770,33 @@ int ExistsWorker(char p[]){
 	while(fread(&user_tmp, sizeof(user_tmp), 1, file) == 1){ // Search for credentials.
 	
 		if(strcmp(p, user_tmp.username) == 0)
+			flag = 1;
+	}
+
+	fclose(file); // Close the file.´
+
+	return flag;
+}
+
+
+int ExistsComponent(int id){
+	int flag = 0;
+
+	GetCurrentDir(buff, FILENAME_MAX);
+	strcpy(curr_dir, buff); 
+	char path[MAX_BUF] = "/data/components.bin"; // Define directory.
+
+	strcat(curr_dir, path); // Make the mix.
+
+	if(fopen(curr_dir, "r") == NULL) // Verify if the file exists.
+		fopen(curr_dir, "w");
+	else
+		file = fopen(curr_dir, "r"); // Open the file.
+
+	struct employee component_tmp;
+	while(fread(&component_tmp, sizeof(component_tmp), 1, file) == 1){ // Search for credentials.
+	
+		if(id == component_tmp.id)
 			flag = 1;
 	}
 
@@ -832,6 +907,354 @@ void Search(){
 
 }
 
+// == Components functions == //
+void InsertComponents(void){
+
+	header();
+	footer();
+
+	GetCurrentDir(buff, FILENAME_MAX);
+	strcpy(curr_dir, buff); 
+	char path[MAX_BUF] = "/data/components.bin"; // Define directory.
+	
+	printf("\n\t\t:: INSERCAO DE COMPONENTE :::");
+	printf("\n\n\t\tID: ");
+	scanf("%d", &company_tmp.id); fflush(stdin);
+
+	printf("\t\tNome: ");
+	gets(component_tmp.name); fflush(stdin);
+
+	printf("\t\tNumero de serie: ");
+	scanf("%s", component_tmp.serie_number); fflush(stdin);
+
+	printf("\t\tData de aquisicao: ");
+	scanf("%s", component_tmp.date_taken); fflush(stdin);
+
+	printf("\t\tDias de garantia: ");
+	scanf("%d", &component_tmp.guarantee); fflush(stdin);
+
+	printf("\t\tID do fornecedor: ");
+	scanf("%d", &component_tmp.id_supplier); fflush(stdin);
+
+	printf("\t\tID do Fabricante: ");
+	scanf("%d", &component_tmp.id_maker); fflush(stdin);
+	
+	printf("\t\tTipo de componente: ");
+	scanf("%d", &component_tmp.type); fflush(stdin);
+	
+	printf("\t\tCondicao: ");
+	scanf("%d", &component_tmp.status); fflush(stdin);
+
+	printf("\t\tID do Posto de Trabalho: ");
+	scanf("%d", &component_tmp.id_work_office); fflush(stdin);
+
+	GetCurrentDir(buff, FILENAME_MAX);
+	strcpy(curr_dir, buff); 
+	strcpy(path, "/data/components.bin"); // Define directory.
+	strcat(curr_dir, path); // Make the mix.
+	
+	if(fopen(curr_dir, "r") == NULL) // Verify if the file exists.
+		fopen(curr_dir, "a");
+	else
+		file = fopen(curr_dir, "a"); // Open the file.
+
+	if(file == NULL){
+		printf("Problemas na abertura do ficheiro.\n\n");
+		Components();
+	}
+
+	if(fwrite(&component_tmp, sizeof(component_tmp), 1, file))
+		printf("\n\t\tFuncionario inserido com sucesso!\n\n");
+	else {
+		printf("Erro de insercao\n");
+		Components();
+	}
+
+	fclose(file);
+
+	pressAnyKey();
+	Components();
+}
+
+void UpdateComponents(void){
+	header();
+	footer();
+	
+	printf("\n\t\t:: ATUALIZACAO DE COMPONENTE :::\n");
+	printf("\n\t\tId do Componente: ");
+	scanf("%s", component_tmp.id); fflush(stdin);
+
+	if(ExistsComponent(component_tmp.id) == 0){
+		
+		printf("\n\n\t\tComponente inexistente!\n");
+		printf("\n\t\tTentar novamente ? Yes/No: ");
+		scanf("%c", &choice);
+		fflush(stdin);
+
+		choice = toupper(choice);
+
+		if(choice == 'Y')
+			UpdateWorker();
+		else Worker();
+	}
+	else{	
+		strcpy(curr_dir, buff); 
+		char path[MAX_BUF] = "/data/components.bin"; // Define directory.
+
+		strcat(curr_dir, path); // Make the mix.
+
+		if(fopen(curr_dir, "r") == NULL) // Verify if the file exists.
+			fopen(curr_dir, "w");
+		else
+			file = fopen(curr_dir, "r"); // Open the file.
+
+		struct components all_components[MAX_COMPONENTS];
+		fread(&all_components, sizeof(struct components), MAX_EMPLOYEES, file);
+		
+		int cont = 0;
+		for ( i = 0; i<MAX_EMPLOYEES; i++){
+			if(all_components[i].id == component_tmp.id){
+							
+				printf("\t\tNome: ");
+				gets(component_tmp.name); fflush(stdin);
+
+				printf("\t\tNumero de serie: ");
+				scanf("%s", component_tmp.serie_number); fflush(stdin);
+
+				printf("\t\tData de aquisicao: ");
+				scanf("%s", component_tmp.date_taken); fflush(stdin);
+
+				printf("\t\tDias de garantia: ");
+				scanf("%d", &component_tmp.guarantee); fflush(stdin);
+
+				printf("\t\tID do fornecedor: ");
+				scanf("%d", &component_tmp.id_supplier); fflush(stdin);
+
+				printf("\t\tID do Fabricante: ");
+				scanf("%d", &component_tmp.id_maker); fflush(stdin);
+
+				printf("\t\tTipo de componente: ");
+				scanf("%d", &component_tmp.type); fflush(stdin);
+
+				printf("\t\tCondicao: ");
+				scanf("%d", &component_tmp.status); fflush(stdin);
+
+				printf("\t\tID do Posto de Trabalho: ");
+				scanf("%d", &component_tmp.id_work_office); fflush(stdin);
+
+				break;
+			}
+
+			if(all_components[i].name[0] != '\0')
+				cont++;
+		}
+
+		fclose(file); // Close the file.
+
+		
+		strcpy(curr_dir, buff); 
+		strcpy(path, "/data/components.bin"); // Define directory.
+
+		strcat(curr_dir, path); // Make the mix.
+
+		if(fopen(curr_dir, "r") == NULL) // Verify if the file exists.
+			fopen(curr_dir, "w");
+		else
+			file = fopen(curr_dir, "w"); // Open the file.
+
+		fwrite(&all_components, sizeof(component_tmp), cont + 1, file);
+		printf("\n\t\tDados actualizados com sucesso!\n\n");
+		
+		fclose(file);
+	}
+
+	pressAnyKey();
+	Worker();
+}
+
+void DeleteComponents(void){
+	
+	header();
+	footer();
+	
+	printf("\n\t\t:: DELECAO DE COMPONENTES :::\n");
+	printf("\n\t\tId do Componente: ");
+	scanf("%d", &component_tmp.id); fflush(stdin);
+
+	if(ExistsComponent(component_tmp.id) == 0){
+		
+		printf("\n\n\t\tComponente inexistente!\n");
+		printf("\n\t\tTentar novamente ? Yes/No: ");
+		scanf("%c", &choice);
+		fflush(stdin);
+
+		choice = toupper(choice);
+
+		if(choice == 'Y')
+			DeleteComponents();
+		else Components();
+	}
+	else{	
+
+		printf("\n\t\tTem a certeza que realmente deseja deletar? Sim/Nao: ");
+		char option;
+		scanf("%c", &option);
+
+		option = toupper(option);
+
+		if(option == 'N')
+			Components();
+
+		strcpy(curr_dir, buff); 
+		char path[MAX_BUF] = "/data/components.bin"; // Define directory.
+
+		strcat(curr_dir, path); // Make the mix.
+
+		if(fopen(curr_dir, "r") == NULL) // Verify if the file exists.
+			fopen(curr_dir, "w");
+		else
+			file = fopen(curr_dir, "r"); // Open the file.
+
+		struct components all_components[MAX_EMPLOYEES];
+		fread(&all_components, sizeof(struct components), MAX_COMPONENTS, file);
+		
+		int cont = 0;
+		for ( i = 0; i<MAX_COMPONENTS; i++){
+			if(all_components[i].id = components_tmp.id){	
+				strcpy(all_components[i].name, "");
+			}
+
+			if(all_employees[i].name[0] != '\0')
+				cont++;
+		}
+
+		fclose(file); // Close the file.
+
+		strcpy(curr_dir, buff); 
+		strcpy(path, "/data/employee.bin"); // Define directory.
+
+		strcat(curr_dir, path); // Make the mix.
+
+		if(fopen(curr_dir, "r") == NULL) // Verify if the file exists.
+			fopen(curr_dir, "w");
+		else
+			file = fopen(curr_dir, "w"); // Open the file.
+
+		fwrite(&all_employees, sizeof(employee), cont + 1, file);
+		printf("\n\t\tFuncionario apagado com sucesso!\n\n");
+		
+		fclose(file);
+	}
+
+	pressAnyKey();
+	Worker();
+}
+
+void ListComponents(void){
+	
+	header();
+	footer();
+	
+	printf("\n\t\t:: LISTAGEM DE COMPONENTES :::\n");
+
+	GetCurrentDir(buff, FILENAME_MAX);
+	strcpy(curr_dir, buff); 
+	char path[MAX_BUF] = "/data/components.bin"; // Define directory.
+
+	strcat(curr_dir, path); // Make the mix.
+
+	if(fopen(curr_dir, "r") == NULL) // Verify if the file exists.
+		fopen(curr_dir, "w");
+	else
+		file = fopen(curr_dir, "r"); // Open the file.
+
+	int count = 1;
+	while(fread(&component_tmp, sizeof(component_tmp), 1, file) == 1){ // Search for credentials.
+		if(component_tmp.name[0] == '\0')
+			continue;
+		
+		printf("\n\t\tId: %d\n\t\tDesignacao: %s\n\t\tNumero de Serie: %s\n\t\tData de aquisicao: %s\n\t\tDias de Garantia: %d\n\t\tId do Fornecedor: %d\n\t\tId do Fabricador: %d\n\t\tTipo: %d\n\t\tCondicao: %d\n\t\tId do Posto de Trabalho: %d\n", 
+			component_tmp.id, component_tmp.name, component_tmp.serie_number, component_tmp.date_taken, component_tmp.guarantee, component_tmp.id_supplier, component_tmp.id_maker, component_tmp.type, component_tmp.status, component_tmp.id_work_office);
+		count++;
+	}
+
+	fclose(file); // Close the file.
+
+	printf("\n\n\t\tTOTAL =  %d\n\n", count - 1);
+	pressAnyKey();
+	Components();
+}
+
+void SearchComponents(void){
+
+}
+
+void SubstituteByWorkOffice(){
+
+}
+
+// == WorkOffice functions == //
+void InsertWorkOffice(void){
+
+}
+
+void UpdateWorkOffice(void){
+
+}
+
+void DeleteWorkOffice(void){
+
+}
+
+void ListWorkOffice(void){
+
+}
+
+void SearchWorkOffice(void){
+
+}
+
+// Operations functions
+void InsertOperations(void){
+
+}
+
+void UpdateOperations(void){
+
+}
+
+void DeleteOperations(void){
+
+}
+
+void ListOperations(void){
+
+}
+
+void SearchOperations(void){
+
+}
+
+// == Company functions == //
+void InsertCompany(void){
+
+}
+
+void UpdateCompany(void){
+
+}
+
+void DeleteCompany(void){
+
+}
+
+void ListCompany(void){
+
+}
+
+void SearchCompany(void){
+
+}
 
 int searchWildCard(char text[], char key[], int n, int m){
 	// Code goes here
@@ -905,4 +1328,3 @@ int searchWildCard_v2(char *first, char * second)
 // A function to run test cases
 int compare(char *first, char *second)
 {  searchWildCard_v2(first, second)? 1: 0; }
-  

@@ -3,16 +3,16 @@
 IDENTIDADES:
 
 1 - Componentes:
- - identificação, 
- - designação, 
- - número de série, 
- - data de aquisição, 
- - garantia, 
- - identificação do fornecedor, 
- - identificação do fabricante, 
- - tipo, 
- - condição, 
- - identificação do posto de trabalho
+ - identificação;
+ - designação;
+ - número de série;
+ - data de aquisição;
+ - garantia;
+ - identificação do fornecedor;
+ - identificação do fabricante;
+ - tipo;
+ - condição;
+ - identificação do posto de trabalho;
  - observações.
 
 2 - Posto de trabalho:
