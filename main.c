@@ -1,3 +1,4 @@
+//Library definitions
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <ctype.h>
@@ -89,11 +90,14 @@ struct operations{
 struct company{
 	int id;
 	char name[30];
-	int type[20];
+	char type[20];
 	char contact[60];
 } company_tmp;
 
 // 					#Structures end here
+
+
+// 				#Prototypes start here
 
 // Menu items
 void Components(void);
@@ -147,7 +151,7 @@ void DeleteCompanyFromOperations(int id_company);
 int ExistsCompanyById(int id);
 int ExistsCompany(char p[]);
 
-// Function definitions
+// General function definitions
 void login(void);
 void menu(void);
 void errorMessage(void);
@@ -161,6 +165,9 @@ void Exit(void);
 void pressAnyKey(void);
 int searchWildCard(char text[], char key[], int n, int m);
 int searchWildCard_v2(char * frist, char * second);
+
+// 				#Prototypes end here
+
 
 // Program start running here.
 int main() {
@@ -196,8 +203,10 @@ void login(){
 		else
 			file = fopen(curr_dir, "r"); // Open the file.
 
-		if(strcmp(employee.username, "admin") == 0)
+		if(strcmp(employee.username, "admin") == 0){
 			flag = 1;
+			strcpy(employee.name, "Administrador");
+		}
 
 		while(fread(&user_tmp, sizeof(user_tmp), 1, file) == 1){ // Search for credentials.
 			int tmp1 = strcmp(user_tmp.username, employee.username); // Check match between users.
@@ -206,6 +215,7 @@ void login(){
 			if(tmp1 == 0 && tmp2 == 0) // When it's true, means that the credentials are correct.
 			{
 				flag = 1;
+				employee = user_tmp;
 				break;
 			}
 		}
@@ -228,7 +238,7 @@ void login(){
 
 		//printf("\nPress any KEY to continue.\n");
 		if(flag<-3)
-			printf("\n\nExcedeu o limite de tentativas.\n");
+			printf("\n\t\t Excedeu o limite de tentativas.\n");
 		
 		if(choice == '2' || flag<-3){ 
 			Exit();
@@ -243,7 +253,7 @@ void mainMenu(){
 	header();
 	footer();
     printf("\n\t\t::: MENU PRINCIPAL :::");
-    printf("\n\n\t\t[1] => Componentes:\n\t\t[2] => Posto de trabalho:\n\t\t[3] => Funcionarios:\n\t\t[4] => Operacoes:\n\t\t[5] => Empresas:\n\t\t[6] => Voltar <=::\n\t\t[7] => Sair.\n\n\t\tOperacoes: ");
+    printf("\n\n\t\t[1] => Componentes:\n\t\t[2] => Posto de trabalho:\n\t\t[3] => Funcionarios:\n\t\t[4] => Operacoes:\n\t\t[5] => Empresas:\n\t\t[6] => Estatistica:\n\t\t[7] => Voltar <=::\n\t\t[8] => Sair.\n\n\t\tOperacoes: ");
     scanf("%c", &choice); fflush(stdin);
 
     switch(choice)
@@ -258,9 +268,11 @@ void mainMenu(){
         break;
         case '5': Company();
         break;
-        case '6': login();
+        case '6': Statistics();
         break;
-        case '7': Exit();
+        case '7': login();
+        break;
+        case '8': Exit();
         break;
         default: mainMenu();
         break;
@@ -299,7 +311,6 @@ void header(){
 	printf("\t\t\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb XPTO MANAGMENT SYSTEM \xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\n");
 }
 
-
 void footer(){
 	time_t t;
 	time(&t);
@@ -314,9 +325,9 @@ void Exit(){
 void successful(){
 	printf("\n\n\t\tUsuario logado com sucesso!\n\n");
 	char u[20]; // It's an auxiliary variable used to print username.
-	strcpy(u, employee.username);
+	strcpy(u, employee.name);
 	u[0] = toupper(u[0]);
-	printf("\t\t%s, seja bem-vindo ao XPTO MANAGEMENT SYSTEM! \n\t\tSinta-te a vontade usando o sistema ...\n\n", u);
+	printf("\t\tSr(a). %s, seja bem-vindo ao XPTO MANAGEMENT SYSTEM! \n\t\tSinta-te a vontade usando o sistema ...\n\n", u);
 	
 	pressAnyKey();
 	mainMenu();
@@ -414,7 +425,7 @@ void Worker(){
 void Operations(){
 	header();
 	footer();
-    printf("\n\t\t:: MENU OPERACOES :::");
+    printf("\n\t\t::: MENU OPERACOES :::");
 	printf("\n\n\t\t[1] => Inserir:\n\t\t[2] => Alterar:\n\t\t[3] => Apagar:\n\t\t[4] => Listar:\n\t\t[5] => Pesquisar:\n\t\t[6] => Voltar <=::\n\t\t[7] => Sair.\n\n\t\tOperacoes: ");
 	scanf("%c", &choice); fflush(stdin);
 
@@ -564,13 +575,13 @@ void UpdateWorker(){
 	if(ExistsWorker(user_tmp.username) == 0){
 		
 		printf("\n\n\t\tUsuario inexistente!\n");
-		printf("\n\t\tTentar novamente ? Yes/No: ");
+		printf("\n\t\tTentar novamente ? Sim/Nao: ");
 		scanf("%c", &choice);
 		fflush(stdin);
 
 		choice = toupper(choice);
 
-		if(choice == 'Y')
+		if(choice == 'S')
 			UpdateWorker();
 		else Worker();
 	}
@@ -677,13 +688,13 @@ void DeleteWorker(){
 	if(ExistsWorker(user_tmp.username) == 0){
 		
 		printf("\n\n\t\tUsuario inexistente!\n");
-		printf("\n\t\tTentar novamente ? Yes/No: ");
+		printf("\n\t\tTentar novamente ? Sim/Nao: ");
 		scanf("%c", &choice);
 		fflush(stdin);
 
 		choice = toupper(choice);
 
-		if(choice == 'Y')
+		if(choice == 'S')
 			DeleteWorker();
 		else Worker();
 	}
@@ -1038,13 +1049,13 @@ void UpdateComponents(void){
 	if(ExistsComponentById(component_tmp.id) == 0){
 		
 		printf("\n\n\t\tComponente inexistente!\n");
-		printf("\n\t\tTentar novamente ? Yes/No: ");
+		printf("\n\t\tTentar novamente ? Sim/Nao: ");
 		scanf("%c", &choice);
 		fflush(stdin);
 
 		choice = toupper(choice);
 
-		if(choice == 'Y')
+		if(choice == 'S')
 			UpdateComponents();
 		else Components();
 	}
@@ -1135,13 +1146,13 @@ void DeleteComponents(void){
 	if(ExistsComponentById(component_tmp.id) == 0){
 		
 		printf("\n\n\t\tComponente inexistente!\n");
-		printf("\n\t\tTentar novamente ? Yes/No: ");
+		printf("\n\t\tTentar novamente ? Sim/Nao: ");
 		scanf("%c", &choice);
 		fflush(stdin);
 
 		choice = toupper(choice);
 
-		if(choice == 'Y')
+		if(choice == 'S')
 			DeleteComponents();
 		else Components();
 	}
@@ -1266,7 +1277,7 @@ void SearchComponents(void){
 		if(tmp1 == 0 || tmp2 == 1){
 			//Print here
 			printf("\n\t\tId: %d\n\t\tDesignacao: %s\n\t\tNumero de Serie: %s\n\t\tData de aquisicao: %s\n\t\tDias de Garantia: %d\n\t\tId do Fornecedor: %d\n\t\tId do Fabricador: %d\n\t\tTipo: %d\n\t\tCondicao: %d\n\t\tId do Posto de Trabalho: %d\n", 
-			component_tmp.id, component_tmp.name, component_tmp.serie_number, component_tmp.date_taken, component_tmp.guarantee, component_tmp.id_supplier, component_tmp.id_maker, component_tmp.type, component_tmp.status, component_tmp.id_work_office);
+				component_tmp.id, component_tmp.name, component_tmp.serie_number, component_tmp.date_taken, component_tmp.guarantee, component_tmp.id_supplier, component_tmp.id_maker, component_tmp.type, component_tmp.status, component_tmp.id_work_office);
 		
 		}
 	}
@@ -1288,13 +1299,13 @@ void SubstituteByWorkOffice(){
 	if(ExistsComponentById(component_tmp.id) == 0){
 		
 		printf("\n\n\t\tComponente inexistente!\n");
-		printf("\n\t\tTentar novamente ? Yes/No: ");
+		printf("\n\t\tTentar novamente ? Sim/Nao: ");
 		scanf("%c", &choice);
 		fflush(stdin);
 
 		choice = toupper(choice);
 
-		if(choice == 'Y')
+		if(choice == 'S')
 			SubstituteByWorkOffice();
 		else Components();
 	}
@@ -1325,13 +1336,13 @@ void SubstituteByWorkOffice(){
 				if(ExistsComponentById(id_new) == 0){
 		
 					printf("\n\n\t\tComponente inexistente!\n");
-					printf("\n\t\tTentar novamente ? Yes/No: ");
+					printf("\n\t\tTentar novamente ? Sim/Nao: ");
 					scanf("%c", &choice);
 					fflush(stdin);
 
 					choice = toupper(choice);
 
-					if(choice == 'Y')
+					if(choice == 'S')
 						SubstituteByWorkOffice();
 					else Components();
 				} else{
@@ -1391,7 +1402,7 @@ void InsertWorkOffice(void){
 	printf("\n\t\tLocal: ");
 	gets(work_office_tmp.place); fflush(stdin);
 
-	printf("\n\t\tSecção: ");
+	printf("\n\t\tSeccao: ");
 	scanf("%d", &work_office_tmp.section); fflush(stdin);
 	
 	printf("\n\t\tNota: ");
@@ -1441,13 +1452,13 @@ void UpdateWorkOffice(void){
 	if(ExistsWorkOffice(work_office_tmp.name) == 0){
 		
 		printf("\n\n\t\tPosto de Trabalho inexistente!\n");
-		printf("\n\t\tTentar novamente ? Yes/No: ");
+		printf("\n\t\tTentar novamente ? Sim/Nao: ");
 		scanf("%c", &choice);
 		fflush(stdin);
 
 		choice = toupper(choice);
 
-		if(choice == 'Y')
+		if(choice == 'S')
 			UpdateWorkOffice();
 		else WorkOffice();
 	}
@@ -1475,7 +1486,7 @@ void UpdateWorkOffice(void){
 				printf("\n\t\tLocal: ");
 				gets(all_work_offices[i].place); fflush(stdin);
 
-				printf("\n\t\tSecção: ");
+				printf("\n\t\tSeccao: ");
 				scanf("%d", &all_work_offices[i].section); fflush(stdin);
 
 				printf("\n\t\tNota: ");
@@ -1523,13 +1534,13 @@ void DeleteWorkOffice(void){
 	if(ExistsComponentById(work_office_tmp.id) == 0){
 		
 		printf("\n\n\t\tPosto de Trabalo inexistente!\n");
-		printf("\n\t\tTentar novamente ? Yes/No: ");
+		printf("\n\t\tTentar novamente ? Sim/Nao: ");
 		scanf("%c", &choice);
 		fflush(stdin);
 
 		choice = toupper(choice);
 
-		if(choice == 'Y')
+		if(choice == 'S')
 			DeleteComponents();
 		else Components();
 	}
@@ -1608,11 +1619,11 @@ void ListWorkOffice(void){
 		file = fopen(curr_dir, "r"); // Open the file.
 
 	int count = 1;
-	while(fread(&work_office_tmp, sizeof(work_office_tmp), 1, file) == 1){ // Search for credentials.
+	while(fread(&work_office_tmp, sizeof(struct work_office), 1, file) == 1){ // Search for credentials.
 		if(work_office_tmp.name[0] == '\0')
 			continue;
 		
-		printf("\n\t\tId: %d\n\t\tNome: %s\n\t\tLugar: %s\n\t\tSecção: %s\n\t\tNota: %d\n\t\tId do Funcionario: %d\n", 
+		printf("\n\t\tId: %d\n\t\tNome: %s\n\t\tLugar: %s\n\t\tSeccao: %d\n\t\tNota: %s\n\t\tId do Funcionario: %d\n", 
 			work_office_tmp.id, work_office_tmp.name, work_office_tmp.place, work_office_tmp.section, work_office_tmp.note, work_office_tmp.id_employee);
 		count++;
 	}
@@ -1654,7 +1665,7 @@ void SearchWorkOffice(void){
 		if(tmp1 == 0 || tmp2 == 1){
 			//Print here
 		
-			printf("\n\t\tId: %d\n\t\tNome: %s\n\t\tLugar: %s\n\t\tSecção: %s\n\t\tNota: %d\n\t\tId do Funcionario: %d\n", 
+			printf("\n\t\tId: %d\n\t\tNome: %s\n\t\tLugar: %s\n\t\tSeccao: %s\n\t\tNota: %d\n\t\tId do Funcionario: %d\n", 
 				work_office_tmp.id, work_office_tmp.name, work_office_tmp.place, work_office_tmp.section, work_office_tmp.note, work_office_tmp.id_employee);
 		
 		}
@@ -1719,16 +1730,16 @@ void InsertOperations(void){
 	scanf("%d", &operation_tmp.id_company); fflush(stdin);
 
 	printf("\n\n\t\tTipo: ");
-	scanf("%s", operation_tmp.type); fflush(stdin);
+	scanf("%d", &operation_tmp.type); fflush(stdin);
 	
 	printf("\n\n\t\tData de Entrada: ");
-	scanf("%d", &operation_tmp.date_in); fflush(stdin);
+	scanf("%s", operation_tmp.date_in); fflush(stdin);
 
-	printf("\n\n\t\tData de Saída: ");
-	scanf("%d", &operation_tmp.date_out); fflush(stdin);
+	printf("\n\n\t\tData de Saida: ");
+	scanf("%s", operation_tmp.date_out); fflush(stdin);
 
-	printf("\n\n\t\tData de Previsão de Entrada: ");
-	scanf("%d", &operation_tmp.date_prevision_in); fflush(stdin);
+	printf("\n\n\t\tData de Previsao de Entrada: ");
+	scanf("%s", operation_tmp.date_prevision_in); fflush(stdin);
 	
 	printf("\n\n\t\tId do Funcionario: ");
 	scanf("%d", &operation_tmp.id_employee); fflush(stdin);
@@ -1781,13 +1792,13 @@ void UpdateOperations(void){
 	if(ExistsOperation(operation_tmp.id) == 0){
 		
 		printf("\n\n\t\tOperacao inexistente!\n");
-		printf("\n\t\tTentar novamente ? Yes/No: ");
+		printf("\n\t\tTentar novamente ? Sim/Nao: ");
 		scanf("%c", &choice);
 		fflush(stdin);
 
 		choice = toupper(choice);
 
-		if(choice == 'Y')
+		if(choice == 'S')
 			UpdateOperations();
 		else Operations();
 	}
@@ -1827,10 +1838,10 @@ void UpdateOperations(void){
 				printf("\n\n\t\tData de Entrada: ");
 				scanf("%s", all_operations[i].date_in); fflush(stdin);
 
-				printf("\n\n\t\tData de Saída: ");
+				printf("\n\n\t\tData de Saida: ");
 				scanf("%s", all_operations[i].date_out); fflush(stdin);
 
-				printf("\n\n\t\tData de Previsão de Entrada: ");
+				printf("\n\n\t\tData de Previsao de Entrada: ");
 				scanf("%s", all_operations[i].date_prevision_in); fflush(stdin);
 
 				printf("\n\n\t\tId do Funcionario: ");
@@ -1885,13 +1896,13 @@ void DeleteOperations(void){
 	if(ExistsOperation(operation_tmp.id) == 0){
 		
 		printf("\n\n\t\tOperacao inexistente!\n");
-		printf("\n\t\tTentar novamente ? Yes/No: ");
+		printf("\n\t\tTentar novamente ? Sim/Nao: ");
 		scanf("%c", &choice);
 		fflush(stdin);
 
 		choice = toupper(choice);
 
-		if(choice == 'Y')
+		if(choice == 'S')
 			DeleteOperations();
 		else Operations();
 	}
@@ -1969,12 +1980,16 @@ void ListOperations(void){
 		file = fopen(curr_dir, "r"); // Open the file.
 
 	int count = 1;
-	while(fread(&operation_tmp, sizeof(operation_tmp), 1, file) == 1){ // Search for credentials.
+	while(fread(&operation_tmp, sizeof(struct operations), 1, file) == 1){ // Search for credentials.
 		if(operation_tmp.id_internal_doc == -1 || operation_tmp.id_external_doc == -1) 
 			continue;
 		
-		printf("\n\t\tId: %d\n\t\tId do Documento Interno: %d\n\t\tId do Documento Externo: %s\n\t\tId do Posto de Trabalho: %s\n\t\tId do Componente: %d\n\t\tId da Empresa: %d\n\t\tTipo de Operacao: %d\n\t\tData de Saida: %d\n\t\tData de Chegada: %d\n\t\tData Prevista de Chegada: %d\n\t\tId do Funcionario Responsavel: %d\n\t\tData da Operacao: %d\n\t\tMontante: %d\n\t\tObservacoes: %d\n", 
-			operation_tmp.id, operation_tmp.id_internal_doc, operation_tmp.id_external_doc, operation_tmp.id_work_office, operation_tmp.id_component, operation_tmp.id_company);
+		printf("\n\t\tId: %d\n\t\tId do Documento Interno: %d\n\t\tId do Documento Externo: %d\n\t\tId do Posto de Trabalho: %d\n\t\tId do Componente: %d\n\t\tId da Empresa: %d\n\t\tTipo de Operacao: %d\n\t\tData de Saida: %s\n\t\tData de Chegada: %s\n\t\tData Prevista de Chegada: %s\n\t\tId do Funcionario Responsavel: %d\n\t\tData da Operacao: %s\n\t\tMontante: %f\n\t\tObservacoes: %s\n", 
+			operation_tmp.id, operation_tmp.id_internal_doc, operation_tmp.id_external_doc, 
+			operation_tmp.id_work_office, operation_tmp.id_component, operation_tmp.id_company, 
+			operation_tmp.type, operation_tmp.date_out, operation_tmp.date_in, 
+			operation_tmp.date, operation_tmp.id_employee, operation_tmp.date, 
+			operation_tmp.money, operation_tmp.observation);
 		count++;
 	}
 
@@ -2010,9 +2025,13 @@ void SearchOperations(void){
 		// Verify here
 		if(operation_tmp.id == key){
 			//Print here
-			printf("\n\t\tId: %d\n\t\tId do Documento Interno: %d\n\t\tId do Documento Externo: %s\n\t\tId do Posto de Trabalho: %s\n\t\tId do Componente: %d\n\t\tId da Empresa: %d\n\t\tTipo de Operacao: %d\n\t\tData de Saida: %d\n\t\tData de Chegada: %d\n\t\tData Prevista de Chegada: %d\n\t\tId do Funcionario Responsavel: %d\n\t\tData da Operacao: %d\n\t\tMontante: %d\n\t\tObservacoes: %d\n", 
-				operation_tmp.id, operation_tmp.id_internal_doc, operation_tmp.id_external_doc, operation_tmp.id_work_office, operation_tmp.id_component, operation_tmp.id_company);
-		
+			
+		printf("\n\t\tId: %d\n\t\tId do Documento Interno: %d\n\t\tId do Documento Externo: %d\n\t\tId do Posto de Trabalho: %d\n\t\tId do Componente: %d\n\t\tId da Empresa: %d\n\t\tTipo de Operacao: %d\n\t\tData de Saida: %s\n\t\tData de Chegada: %s\n\t\tData Prevista de Chegada: %s\n\t\tId do Funcionario Responsavel: %d\n\t\tData da Operacao: %s\n\t\tMontante: %f\n\t\tObservacoes: %s\n", 
+			operation_tmp.id, operation_tmp.id_internal_doc, operation_tmp.id_external_doc, 
+			operation_tmp.id_work_office, operation_tmp.id_component, operation_tmp.id_company, 
+			operation_tmp.type, operation_tmp.date_out, operation_tmp.date_in, 
+			operation_tmp.date, operation_tmp.id_employee, operation_tmp.date, 
+			operation_tmp.money, operation_tmp.observation);
 		}
 	}
 	fclose(file); // Close the file.
@@ -2044,7 +2063,6 @@ void InsertCompany(void){
 	printf("\t\tContacto: ");
 	scanf("%s", company_tmp.contact); fflush(stdin);
 
-	
 	char path[MAX_BUF] = "/data/company.bin"; // Define directory.
 
 	GetCurrentDir(buff, FILENAME_MAX);
@@ -2059,14 +2077,14 @@ void InsertCompany(void){
 
 	if(file == NULL){
 		printf("Problemas na abertura do ficheiro.\n\n");
-		Worker();
+		Company();
 	}
 
-	if(fwrite(&user_tmp, sizeof(user_tmp), 1, file))
+	if(fwrite(&company_tmp, sizeof(struct company), 1, file))
 		printf("\n\t\tEmpresa inserida com sucesso!\n\n");
 	else {
 		printf("Erro de insercao\n");
-		Worker();
+		Company();
 	}
 
 	fclose(file);
@@ -2086,13 +2104,13 @@ void UpdateCompany(void){
 	if(ExistsCompany(company_tmp.name) == 0){
 		
 		printf("\n\n\t\tEmpresa inexistente!\n");
-		printf("\n\t\tTentar novamente ? Yes/No: ");
+		printf("\n\t\tTentar novamente ? Sim/Nao: ");
 		scanf("%c", &choice);
 		fflush(stdin);
 
 		choice = toupper(choice);
 
-		if(choice == 'Y')
+		if(choice == 'S')
 			UpdateCompany();
 		else Company();
 	}
@@ -2164,13 +2182,13 @@ void DeleteCompany(void){
 	if(ExistsCompanyById(company_tmp.id) == 0){
 		
 		printf("\n\n\t\tEmpresa inexistente!\n");
-		printf("\n\t\tTentar novamente ? Yes/No: ");
+		printf("\n\t\tTentar novamente ? Sim/Nao: ");
 		scanf("%c", &choice);
 		fflush(stdin);
 
 		choice = toupper(choice);
 
-		if(choice == 'Y')
+		if(choice == 'S')
 			DeleteCompany();
 		else Company();
 	}
@@ -2291,7 +2309,7 @@ void ListCompany(void){
 		file = fopen(curr_dir, "r"); // Open the file.
 
 	int count = 1;
-	while(fread(&company_tmp, sizeof(company_tmp), 1, file) == 1){ // Search for credentials.
+	while(fread(&company_tmp, sizeof(struct company), 1, file) == 1){ // Search for credentials.
 		if(company_tmp.name[0] == '\0')
 			continue;
 		
@@ -2348,32 +2366,37 @@ void SearchCompany(void){
 	Company();
 }
 
+
+// == Statistic functions == //
 void Statistics(void){
 	header();
 	footer();
 	
 	printf("\n\t\t::: ESTATISTICAS :::");
 	printf("\n\n\t\tTotal de Funcionarios: %d;\n", 12);
-	printf("Total de Operacoes feitas: %d;\n", 40);
-	printf("Componente mais vendido: %d\n", 6);
-	printf("Operacao mais cara: %d\n", 2);
-	printf("Numero de vendas nos ultimos 3 meses: %d\n", 12);
-	printf("Melhor fornecedor: %d\n", 9);
-	printf("Funcionario que mais atendeu: %d\n", 34);
-	printf("Percentagem de ganho: %2.f%\n", 60.00);
-	printf("Melhor duracao saida e chegada de produtos: %d\n\n", 60.00);
+	printf("\n\t\tTotal de Operacoes feitas: %d;\n", 40);
+	printf("\n\t\tComponente mais vendido: %d\n", 6);
+	printf("\n\t\tOperacao mais cara: %d\n", 2);
+	printf("\n\t\tNumero de vendas nos ultimos 3 meses: %d\n", 12);
+	printf("\n\t\tMelhor fornecedor: %d\n", 9);
+	printf("\n\t\tFuncionario que mais atendeu: %d\n", 34);
+	printf("\n\t\tPercentagem de ganho: %2.f%\n", 60.00);
+	printf("\n\t\tMelhor duracao saida e chegada de produtos: %d\n\n", 60.00);
 
-	printf("\n\t\tDeseja voltar? Yes/No: ");
+	printf("\n\t\tDeseja voltar? Sim/Nao: ");
 		scanf("%c", &choice);
 		fflush(stdin);
 
 		choice = toupper(choice);
 
-		if(choice == 'Y')
+		if(choice == 'S')
 			mainMenu();
 		else Exit();
 }
 
+// == WildCard feature == //
+
+// Using Dynamic Programming
 int searchWildCard(char text[], char key[], int n, int m){
 	// Code goes here
 	// Empty text can only math with empty key
@@ -2416,6 +2439,7 @@ int searchWildCard(char text[], char key[], int n, int m){
 	return dp[n][m];
 }
 
+// Using pointers
 int searchWildCard_v2(char *first, char * second)
 {
     // If we reach at the end of both strings, we are done
